@@ -1,4 +1,4 @@
-package com.alexmochalov.settings;
+package com.alexmochalov.eyeac;
 import com.alexmochalov.eyeac.R;
 import com.alexmochalov.eyeac.R.id;
 import com.alexmochalov.eyeac.R.layout;

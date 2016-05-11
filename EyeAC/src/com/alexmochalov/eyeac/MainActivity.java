@@ -23,32 +23,30 @@ import android.content.SharedPreferences.*;
 
 import com.alexmochalov.eyeac.SurfaceViewScreenButtons.MessageType.*;
 import com.alexmochalov.files.SelectFileDialog;
-import com.alexmochalov.settings.DialogModeGroup;
-import com.alexmochalov.settings.SettingsActivity;
 import com.alexmochalov.animation.*;
 
-
+/**
+ * 
+ * @author Mochalov Alexey
+ * App intended to train the tracking of the eyes movement (the Eye Accessing Cues)
+ *
+ */
 public class MainActivity extends Activity  { //implements OnSharedPreferenceChangeListener
 	Context mContext;
-	// The path to save and load images 
-	String initPath = Params.APP_FOLDER;
-	// Name of the current image (*.png)
-	String mFileName = "new_subtitles";
-	// Image file extention
-	static final String FILE_EXT[] = {".srt"};
-	
+	 
+	String initPath = Params.APP_FOLDER; // The path to save files
+	String mFileName = "new_subtitles"; // Name of the current marking file (*.srt)
+	static final String FILE_EXT[] = {".srt"}; // Extension of the marking files
 
-//Menu menu;
-	String info = "";
+	String mInfo = ""; // Text is shown in the bottom of the screen 
 	
-	SurfaceViewScreenButtons surface;
-    SharedPreferences prefs;
-    Titles titles = new Titles();
+	SurfaceViewScreenButtons surface; // Surface to pain all visual elements
+	
+    Titles titles = new Titles(); // The list of the marks. It is used in the mode "move to button" 
     
     static final String PREFS_PERIOD = "PREFS_PERIOD";
     static final String PREFS_MODE = "PREFS_MODE";
     static final String FACE_NUMBER = "FACE_NUMBER";
-// SELECT * FROM instanceof android.app.Activity
 	 
 	Handler handlerDlg;
 	Handler handlerGrp;
@@ -90,8 +88,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 		//actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#bb111111")));		
 		actionBar.hide();
-		
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		mContext = this;
 		
@@ -320,7 +316,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		super.onResume();
 		File file = new File(Params.APP_FOLDER+"/designer");
 		             
-		
+	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		float i = prefs.getFloat("offsetX", 0); 
 		float j = prefs.getFloat("offsetY", 0); 
 		float k = prefs.getFloat("zoom", 1);
@@ -519,19 +515,20 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 	private void setInfo(int mode) {
 		if (mode == 0)
-			info = getString(R.string.mode_info_random);
+			mInfo = getString(R.string.mode_info_random);
 		else if (mode == 1)
-			info = getString(R.string.mode_info_groups);
+			mInfo = getString(R.string.mode_info_groups);
 		else if (mode == 2)
-			info = getString(R.string.mode_info_tobuttom);
+			mInfo = getString(R.string.mode_info_tobuttom);
 		else if (mode == 999)
-			info = getString(R.string.mode_info_coordinates);
-		surface.setMessage(info, MType.info);
+			mInfo = getString(R.string.mode_info_coordinates);
+		surface.setMessage(mInfo, MType.info);
 	}
 
 	private void setMode(int mode) {
 			surface.setMode(mode);
 			
+		    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			int i = prefs.getInt("count", 3);
 			Params.timeWaiting = prefs.getInt("time_answer", 4);
 			Params.timeBetween = prefs.getInt("time_between_groups", 2);
@@ -546,6 +543,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		  Log.d("","ON PAUSE");
 		  surface.pause();
 		  
+		  SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		  Editor editor = prefs.edit();
 		  editor.putInt(PREFS_PERIOD, surface.getPeriod());
 		  editor.putInt(PREFS_MODE, surface.getMode());
@@ -669,3 +667,5 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 	}	
 }
 
+
+//SELECT * FROM instanceof android.app.Activity

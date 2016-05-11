@@ -1,7 +1,5 @@
-package com.alexmochalov.settings;
-import com.alexmochalov.eyeac.Params;
+package com.alexmochalov.eyeac;
 import com.alexmochalov.eyeac.R;
-import com.alexmochalov.eyeac.SurfaceViewScreenButtons;
 import com.alexmochalov.eyeac.R.id;
 import com.alexmochalov.eyeac.R.layout;
 import com.alexmochalov.animation.SurfaceViewScreen;

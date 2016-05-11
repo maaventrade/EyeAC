@@ -1,4 +1,4 @@
-package com.alexmochalov.settings;
+package com.alexmochalov.eyeac;
 
 import java.util.List;
 
