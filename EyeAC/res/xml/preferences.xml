@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+		<PreferenceCategory 
+			android:title="Preferences">
+			
+		<ListPreference 
+    		android:key="signal_for_correct_answer"
+    		android:title="@string/signal_for_correct_answer"
+    		android:entryValues="@array/SignalsCorrectData"
+    		android:entries="@array/SignalsCorrect"/>
+		    	<!--	    
+		    <ListPreference 
+				android:key="bg_color"
+				android:title="@string/bg_color"
+				android:entryValues="@array/BgColorData"
+				android:entries="@array/BgColor"/>
+			-->
+		
+			<CheckBoxPreference
+				android:key="extended_set"
+				android:title="@string/extended_set"
+				android:defaultValue="false" />
+			
+			<com.alexmochalov.eyeac.CustomListPreference
+                    android:key="face_number"
+                    android:title="@string/face_number"
+                    android:dialogTitle="@string/face_number"
+                    android:defaultValue="0"
+                    android:entries="@array/FaceNumber"
+                    android:entryValues="@array/FaceNumber"/>
+		</PreferenceCategory>
+</PreferenceScreen>

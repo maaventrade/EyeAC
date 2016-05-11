@@ -1,0 +1,183 @@
+<resources>
+
+<string-array name="SignalsCorrectData">
+    <item>0</item>
+    <item>1</item>
+</string-array>
+
+<string-array name="SignalsCorrect">
+    <item>No</item>
+    <item>Vibration</item>
+</string-array>
+
+	<string-array name="BgColorData">
+		<item>0</item>
+		<item>-1</item>
+	</string-array>
+
+	<string-array name="BgColor">
+		<item>Black</item>
+		<item>White</item>
+	</string-array>
+
+	<string-array name="modeData">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>999</item>
+	</string-array>
+
+	<string-array name="mode">
+		<item>@string/mode_info_random</item>
+		<item>@string/mode_info_groups</item>
+		<item>@string/mode_info_tobuttom</item>
+		
+	</string-array>
+
+
+	<string-array name="FaceNumber">
+		<item>0</item>
+		<item>1</item>
+	</string-array>
+	
+<string-array name="Dir0R">
+<item>117</item>
+<item>270</item>
+
+<item>204</item>
+<item>266</item>
+
+<item>303</item>
+<item>268</item>
+
+<item>71</item>
+<item>300</item>
+
+	<item>201</item>
+	<item>299</item>
+		
+<item>326</item>
+<item>300</item>
+
+<item>96</item>
+<item>324</item>
+<item>195</item>
+<item>332</item>
+<item>311</item>
+<item>321</item>
+</string-array>
+	
+<string-array name="Dir0L">
+<item>604</item>
+<item>270</item>
+
+<item>690</item>
+<item>266</item>
+
+<item>792</item>
+<item>268</item>
+	
+<item>564</item>
+<item>300</item>
+
+	<item>690</item>
+	<item>297</item>
+	
+<item>821</item>
+<item>301</item>
+
+<item>591</item>
+<item>326</item>
+<item>692</item>
+<item>332</item>
+<item>808</item>
+<item>319</item>
+
+</string-array>
+	
+<string-array name="Dir2R">
+<item>286</item>
+<item>505</item>
+<item>327</item>
+<item>508</item>
+	<item>370</item>
+	<item>508</item>
+<item>279</item>
+<item>524</item>
+<item>326</item>
+<item>528</item>
+	<item>369</item>
+	<item>528</item>
+<item>287</item>
+<item>540</item>
+<item>326</item>
+<item>548</item>
+<item>367</item>
+<item>548</item>
+</string-array>
+		
+<string-array name="Dir2L">
+<item>606</item>
+<item>505</item>
+<item>651</item>
+<item>508</item>
+	<item>686</item>
+	<item>511</item>
+<item>608</item>
+<item>526</item>
+<item>651</item>
+<item>528</item>
+	<item>687</item>
+	<item>525</item>
+<item>611</item>
+<item>545</item>
+<item>650</item>
+<item>549</item>
+<item>687</item>
+<item>550</item>
+</string-array>
+    
+<string-array name="Dir3R">
+<item>-0.22281167</item>
+<item>0.18037136</item>
+<item>-0.14854111</item>
+<item>0.1750663</item>
+   <item>-0.074270554</item>
+   <item>0.18037136</item>
+<item>-0.23342176</item>
+<item>0.2281167</item>
+<item>-0.13793103</item>
+<item>0.2387268</item>
+<item>-0.0530504</item>
+<item>0.2387268</item>
+<item>-0.22281167</item>
+<item>0.28116712</item>
+<item>-0.12732096</item>
+<item>0.30769232</item>
+<item>-0.06896552</item>
+<item>0.265252</item>
+</string-array>
+		
+<string-array name="Dir3L">
+	<item>0.46684352</item>
+	<item>0.16445623</item>
+	<item>0.5464191</item>
+	<item>0.13793103</item>
+		<item>0.63129973</item>
+		<item>0.12732096</item>
+	<item>0.4509284</item>
+	<item>0.21750663</item>
+	<item>0.57824934</item>
+	<item>0.19628647</item>
+	<item>0.65782493</item>
+	<item>0.1856764</item>
+	<item>0.48806366</item>
+	<item>0.25994694</item>
+	<item>0.58885944</item>
+	<item>0.25994694</item>
+	<item>0.63129973</item>
+	<item>0.21750663</item>
+</string-array>
+		
+
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Eye Accessing Cues trainer</string>
+	
+    <string name="action_settings">Настройки</string>
+	<string name="action_about">О приложении</string>
+	<string name="action_help">Справка</string>
+	<string name="action_help_ok">Справка</string>
+	<string name="action_results">Результаты</string>			
+	<string name="action_speed">Скорость</string>			
+	<string name="action_move">Передвинуть/изменить размер</string>			
+				
+	<string name="action_record">Запись</string>			
+	<string name="action_play">Играть</string>
+	<string name="action_submenu">Подменю</string>
+		
+
+	<string name="action_list">Список титров</string>
+	<string name="save_titles">Сохранить титры</string>
+	<string name="load_titles">Загрузить титры</string>
+	<string name="warning_void_titles">Список титров пуст</string>
+	
+	<string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Закрыть приложение</string>
+    <string name="question_exit">Закрыть. Вы уверены?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="cont">Продолжить</string>
+    <string name="reset">Обнулить</string>
+    
+    <string name="results">Результаты</string>
+    
+	<string name="about"><![CDATA[Автор приложения: <b>Alexey Mochalov</b> (<a  href=\"mailto:maaventrade@gmail.com\">maaventrade@gmail.com</a>) <p>
+	    					Автор идеи: пользователь livejournal <b>Metanymous</b> (<a  href=\"http://metapractice.livejournal.com\">metapractice.livejournal.com</a>) <p>
+	    					<b>2016<b>]]></string>
+	    					
+	<string name="resultstr">Ваши результаты:</string>
+	<string name="noresult">Пока результатов нет. Начинайте.</string>
+
+	<string name="none">Нет</string>
+	<string name="vibration">Вибрация</string>
+	<string name="bg_color">Цвет фона</string>
+	
+	
+	<string name="info"><![CDATA[Это приложение предназначено для тренировки наблюдения за <b>Ключами Глазного Доступа</b>. 
+Важность умения наблюдать Ключи Глазного Доступа описана в нейро-лингвистическом программировании (НЛП). 
+Вы можете прочитать об НЛП и Ключах Глазного Доступа в <a  href=\"http://www.google.ru/webhp?q=Eye+Accessing+Cues#newwindow=1&q=Eye+Accessing+Cues\">Интернете</a>.<p>
+<b><font color = red>Как работает приложение:</b></font> на экран выводится условная физиономия и кнопки, подписанные вариантами <b>Ключей Глазного Доступа</b>. 
+После нажатия на экран (в любом месте) глаза нарисованной физиономии начинают движение. 
+Если вы успели нажать на кнопку, соответствующую направлению движения до того как направление изменилось, нажатие засчитывается.
+При нажатии на любое место экрана кроме кнопок, движение приостанавливается. Процент правильных нажатий можно увидеть через меню приложения.<p>
+Скорость движения устанавливается <b>регулятором громкости</b>.
+]]></string>
+
+	<string name="signal_for_correct_answer">Согнал правильного ответа</string>
+	<string name="extended_set">Расширенный набор направлений</string>
+		
+	<string name="mode">Режим...</string>	
+	<string name="count">Количество движений:</string>
+	<string name="time_answer">Время для ответа (с.):</string>
+	<string name="time_between_groups">Время между группами движений (с.):</string>
+	
+	<string name="mode_info_random">Постоянные движения</string>
+	<string name="mode_info_groups">Группы движений</string>
+	<string name="mode_info_tobuttom">Движение к кнопке</string>
+	<string name="mode_info_coordinates">Получить координаты</string>
+			
+	<!-- string name="mode_info_random">Mode: Continuous motion. The eyes are moving randomly. Press the screen buttons in the moving direction while the eyes are moving. The percent of correct actions is showed in the menu Results.</string>
+	<string name="mode_info_groups">Mode: Groups. The eyes are moving randomly and stops. Press the screen buttons in the moving directions when the moving of the eyes paused. The percent of correct actions is showed in the menu Results.</string> -->
+		
+	<string name="face_number">Изображение лица</string>
+			
+</resources>
+	

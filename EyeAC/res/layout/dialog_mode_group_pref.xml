@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:text="@string/count"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"/>
+
+		<EditText
+			android:layout_height="wrap_content"
+			android:inputType="number"
+			android:ems="10"
+			android:layout_width="wrap_content"
+			android:id="@+id/editTextCount"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:text="@string/time_answer"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"/>
+
+		<EditText
+			android:layout_height="wrap_content"
+			android:inputType="number"
+			android:ems="10"
+			android:layout_width="wrap_content"
+			android:id="@+id/editTextTimeAnswer"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:text="@string/time_between_groups"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"/>
+
+		<EditText
+			android:layout_height="wrap_content"
+			android:inputType="number"
+			android:ems="10"
+			android:layout_width="wrap_content"
+			android:id="@+id/editTextTimeBetweenGroups"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal">
+
+		<Button
+			android:layout_height="wrap_content"
+			android:text="@string/ok"
+			android:layout_width="match_parent"
+			android:layout_weight="0.5"
+			android:id="@+id/dialogmodegroupprefButtonOk"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:text="@string/cancel"
+			android:layout_width="match_parent"
+			android:layout_weight="0.5"
+			android:id="@+id/dialogmodegroupprefButtonCancel"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+
