@@ -159,7 +159,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 	
 	public void setOffset(){
-		drawThreadMy.setOffset(isMoveResize());
+		drawThreadMy.setOffset(isMovedResized);
 	}
 	
     @Override
@@ -452,7 +452,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			}
         } else if (action == MotionEvent.ACTION_MOVE) {
         	//drawThreadMy.setMessage("X "+X+" Y "+Y);
-        	if (! canPressBytton() && isMoveResize()){ // 
+        	if (! canPressBytton() && isMovedResized){ // 
 				if (event.getPointerCount() == 1 || mode == 999){
 					//Log.d("", "offsetY "+offsetY);
 					//Log.d("", "y1 "+y1);
@@ -562,7 +562,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
     		y0 = (int) event.getY();
 			distance = 0;
         	
-			if (isMoveResize()) return true;
+			if (isMovedResized) return true;
         	//resize = false;
         	
         	if (modeIsToButton()){

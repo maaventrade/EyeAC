@@ -48,15 +48,14 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	private String currentDir = "";
 	private String currentDirStr = "";
 	private int movingsCount = 0;
-
+	// State (mode) of the application
 	public static class states{
-		enum State{coords, random, group, groupWait, groopBetween, toButton, resize}
+		enum State{coords, random, group, groupWait, groopBetween, toButton}
 	}
-	
 	private static State state;
 	
 	private boolean pause = true;
-	private boolean moveResize = false;
+	protected boolean isMovedResized = false; // If image is moved and resised
 	private boolean comeBack = false;
 	private boolean dirSelected = false;
 	
@@ -74,11 +73,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		void callbackGroupResult(boolean result); 
 		void onFinish(); 
 	} 
-	
+	/**
+	* Test if screen buttons can be pressed
+	*/
 	public boolean canPressBytton()
 	{
-		if (moveResize) return false;
-		
+		if (isMovedResized) return false;
 		if (state == State.toButton) return true;
 		if (pause || state == State.groopBetween) return false;
 		else if (state == State.random 
@@ -87,14 +87,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	public void setMoveResize(){
-		moveResize = !moveResize;
+		isMovedResized = !isMovedResized;
 	}
 
-	public boolean isMoveResize(){
-		return moveResize;
-	}
-	
-	
+	/**
+	*
+	**/
 	public void setMode(int mode)
 	{
 		switch (mode){
@@ -145,7 +143,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
 	public boolean isResized()
 	{
-		return state == State.resize;
+		return isMovedResized;
 	}
 		
 	
@@ -166,7 +164,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
 	public boolean isCoords()
 	{
-		return state == State.coords && !moveResize;
+		return state == State.coords && !isMovedResized;
 	}
 	
 	public void setCoord(float x, float y, float X, float halfWidth) {
