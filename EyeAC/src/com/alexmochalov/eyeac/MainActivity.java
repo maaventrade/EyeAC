@@ -40,9 +40,9 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 	String mInfo = ""; // Text is shown in the bottom of the screen 
 	
-	SurfaceViewScreenButtons surface; // Surface to pain all visual elements
+	SurfaceViewScreenButtons surface; // Surface to paint all visual elements
 	
-    Titles titles = new Titles(); // The list of the marks. It is used in the mode "move to button" 
+    Titles titles = new Titles(); // The list of the marks. It is used in the mode "Move to button" 
     
     static final String PREFS_PERIOD = "PREFS_PERIOD";
     static final String PREFS_MODE = "PREFS_MODE";
@@ -59,7 +59,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 	MenuItem mMenuItemSubmenu;
 	// To shift screen buttons when the action bar is visible
 	int actionBarHeight;
-	// Actions from action bar buttons. It is used  in the mode "move to button" 
+	// Actions from action bar buttons. It is used  in the mode "Move to button" 
 	enum Action {play, stop, record};
 	Action mAction;
 	
@@ -92,20 +92,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		// If there is not found APP_FOLDER, create it
 		checkDirectory();
 		
-		//prefs.registerOnSharedPreferenceChangeListener(this);
-		
-		//surface.setRects(displaymetrics.widthPixels, displaymetrics.heightPixels);
-		//surface.callback = new SurfaceViewScreenButtons.MyCallbackIv(){
-		//	@Override
-		//	public void callbackAction(String action) {
-		//		//executeCommand(action);
-		//	}};
-		 
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
 	}
 	
 	/**
@@ -118,7 +104,9 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		}
 	}
 
-	// Calculate ActionBar height
+	/**
+	* Get ActionBar height
+	**/
 	private int getActionBarHeight(){
 		TypedValue tv = new TypedValue();
 		if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
@@ -132,15 +120,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		
-		//this.menu = menu;
-		//MenuItem modeMenuItem = menu.findItem(R.id.action_mode);
-		//modeMenuItem.setActionView(R.layout.custom_item_mode);
-		//View view = modeMenuItem.getActionView();
-		//TextView textView = (TextView)view.findViewById(R.id.title);
-		//textView.setText("wertwer werwer");
-		//modeMenuItem.setTitle(info+" ...");
-
 		return true;
 	}
 
@@ -159,6 +138,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 	    
 	    return true;
 	}	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final SelectFileDialog selectFileDialog;
@@ -169,28 +149,26 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		  
 		switch (id) {
 		case R.id.action_mode:
+			// Select mode of the application  
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
 			builder.setTitle(getResources().getString(R.string.mode));
-			
+			// Load the list of the modes
 			String[] modes = getResources().getStringArray(R.array.mode);
 			
 			builder.setItems( modes,
-					
 			    new DialogInterface.OnClickListener() 
 			    {
 			        public void onClick(DialogInterface dialog, int which) { /* which is an index */
 			        	if (which == 3)
 			        		which = 999;
-			        	
 						if (which == 1)
 						{
 							DialogModeGroup dialogMode = new DialogModeGroup(MainActivity.this, surface);
 							dialogMode.show();
-							
 						}
-						
 						if (which == 2){
+							// In the mode "Move to button" we show action bar 
+							// and shift text on the top buttons
 							surface.setTextTopShift(actionBarHeight);
 							actionBar.show();
 							setButtons(Action.stop);
@@ -198,17 +176,12 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 							surface.setTextTopShift(0);
 							actionBar.hide();	
 						}
-						
 			        	setMode(which);
-			        	//MenuItem modeMenuItem = menu.findItem(R.id.action_mode);
-						//modeMenuItem.setTitle(info+"...");
 			        }
 			    }); 
 			builder.show();			
 			return true; 
 		case R.id.action_exit:
-			//finish();
-			//System.exit(0);
 			dialogExit();
 			return true;
 		case R.id.action_about:
@@ -220,16 +193,17 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			dialogHelp.show();
 			return true;
 		case R.id.action_speed:
+			// Show speed control
 			surface.showSeekBarSpeed();
 			return true;
 		case R.id.action_move:
+			// Start move and resize
 			surface.setMoveResize();
 			surface.setOffset();
 			item.setChecked(!item.isChecked());
 			return true;
 		case R.id.action_settings:
 			Intent intent = new Intent(this, SettingsActivity.class);
-			// Parameters to set preference summaries 
 			intent.putExtra("COUNT_DOWN_TIME",10);
 			intent.putExtra("countDownTime",12);
 			startActivityForResult(intent, 0);
@@ -238,20 +212,19 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			DialogResult dialogresult = new DialogResult(this, surface);
 			dialogresult.execute();
 			return true;			
-		case R.id.action_record:
+		case R.id.action_record: // In the mode "Move to button"
 			titles.startRecord();
 			setButtons(Action.record);
 			return true;			
-		case R.id.action_stop:
+		case R.id.action_stop: // In the mode "Move to button"
 			titles.stopRecord();
 			setButtons(Action.stop);
 			return true;		
-		case R.id.action_list:
+		case R.id.action_list: // In the mode "Move to button"
 			DialogTitles dialogTitles = new DialogTitles(this, titles);
 			dialogTitles.show();
-	
 			return true;		
-		case R.id.action_play:
+		case R.id.action_play: // In the mode "Move to button"
 			if (titles.size() == 0)
 				Toast.makeText(mContext, getResources().getString(R.string.warning_void_titles) , Toast.LENGTH_LONG).show();
 			else {
@@ -259,7 +232,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 				titles.play();
 			}	
 			return true;		
-		case R.id.action_save_titles:
+		case R.id.action_save_titles: // In the mode "Move to button"
 			selectFileDialog = new SelectFileDialog(this, 
 					initPath, 
 					mFileName, FILE_EXT, 
@@ -303,13 +276,13 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 			 	selectFileDialog.show();
 			return true;
-				  	
 		}
-		
 		return super.onOptionsItemSelected(item);
 	}
 	
-	
+	/**
+	 * This Runnable is used to wait users answer in the mode "Groups of the movements"
+	 */
 	private Runnable stopWaiting = new Runnable() { 
 		public void run() { 
 			handlerGrp.removeCallbacks(stopWaiting);
@@ -320,38 +293,33 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 	@Override
 	protected void onResume(){
 		super.onResume();
-		File file = new File(Params.APP_FOLDER+"/designer");
-		             
-		Params.designMode = file.exists();               
-		//Params.designMode = true;               
 		
-		Log.d("","S 1");
-		Button button123 =  ((Button)findViewById(R.id.button123));
-		button123.setVisibility(View.INVISIBLE);
+		File file = new File(Params.APP_FOLDER+"/designer");
+		Params.designMode = file.exists();               
 		
 		handlerDlg = new Handler();
 		handlerGrp = new Handler();
 		
+		// Get surface to paint all visual elements
 		surface = ((SurfaceViewScreenButtons)findViewById(R.id.surfaceViewScreen));
 		surface.callback = new SurfaceViewScreen.MyCallback() {
 			@Override
 			public void callbackGroupFinish() {
+				// In the mode "Groups of the movements" group was shown.
+				// Wait answer
 				surface.setMode(300); 
 				handlerGrp.postDelayed(stopWaiting, Params.timeWaiting*1000);
 			}
 
 			@Override
-			public void callbackGroupOk() {
-				dialogResult(true);
-			}
-
-			@Override
-			public void callbackGroupError() {
-				dialogResult(false);
+			public void callbackGroupResult(boolean result) {
+				// In the mode "Groups of the movements" show result OK
+				dialogResult(result);
 			}
 
 			@Override
 			public void onFinish() {
+				// In the mode ""Move to button"" replay finished
 				if (mStop){
 					runOnUiThread(new Runnable() {
 					     @Override
@@ -363,6 +331,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			}
 		}; 
 
+		// In the mode "Move to button" we record touch Up and Down 
 		surface.listener = new SurfaceViewScreenButtons.OnEventListener() {
 			@Override
 			public void onTouchDown(String VAC) {
@@ -377,6 +346,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			}
 		};
 		
+		// Set speed of the movements 
 	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    int period = Math.max(prefs.getInt(PREFS_PERIOD, 50), 10);
 		surface.setPeriod(period);
@@ -400,8 +370,8 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			Params.colorBtnBorder = Color.WHITE;
 			Params.colorMessageText = Color.WHITE;
 		}
-		
-		
+
+		// If Extended set, we use 9 screen buttons, otherwise 6 buttons 
 		boolean bOld = surface.allDirections();
 		boolean b = prefs.getBoolean("extended_set", false);
 		surface.setAllDirections(prefs.getBoolean("extended_set", false));
@@ -413,7 +383,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			mode = Math.min(mode, 1);
 		if (mode == 300) mode = 0;
 		
-		//Log.d("","actionBarHeight "+actionBarHeight);
 		if (mode == 2)
 			surface.setTextTopShift(actionBarHeight);
 			
@@ -436,13 +405,13 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			public void onReturn(boolean stop) {
 				surface.returnToCenter();
 				mStop = stop; 
-				//setButtons(Action.stop);
 			}
-			
 		};
-		//handlerProgress.postDelayed(hideProgressTask, 1000); 
 	}
 	
+	/**
+	 * Start timer to show time of the recording or replay
+	 */
 	private void startTimer(){
 		mTimer = new Timer();
 		mMyTimerTask = new MyTimerTask();
@@ -457,53 +426,74 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		mTimer = null;
 		setInfo(surface.getMode());		
 	}
-	
-	  private void setButtons(Action action) {
-			 if (action == Action.stop){ // Stop
-				 mMenuItemRec.setEnabled(true);
-				 mMenuItemRec.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_rec));
-				 
-				 mMenuItemPlay.setEnabled(true);
-				 mMenuItemPlay.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_play));
-				 
-				 mMenuItemStop.setEnabled(false);
-				 mMenuItemStop.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_stop_g));
-				 
-				 mMenuItemSubmenu.setEnabled(true);
-				 mMenuItemSubmenu.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.submenu));
-				 
-				 stopTimer();
-			 } else if (action == Action.record){ 
-				 mMenuItemRec.setEnabled(false);
-				 mMenuItemRec.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_rec_g));
-				 
-				 mMenuItemPlay.setEnabled(false);
-				 mMenuItemPlay.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_play_g));
 
-				 mMenuItemStop.setEnabled(true);
-				 mMenuItemStop.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_stop));
-				 
-				 mMenuItemSubmenu.setEnabled(false);
-				 mMenuItemSubmenu.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.submenu_g));
-				 startTimer();
-			 } else if (action == Action.play){ 
-				 mMenuItemRec.setEnabled(false);
-				 mMenuItemRec.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_rec_g));
-			 
-				 mMenuItemPlay.setEnabled(false);
-				 mMenuItemPlay.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_play_g));
+	/**
+	 * In the mode "Move to button" set menu buttons
+	 * 
+	 * @param action is a current media action
+	 */
+	private void setButtons(Action action) {
+		if (action == Action.stop) { // Stop
+			mMenuItemRec.setEnabled(true);
+			mMenuItemRec.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_rec));
 
-				 mMenuItemStop.setEnabled(true);
-				 mMenuItemStop.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.button_stop));
-			 
-				 mMenuItemSubmenu.setEnabled(false);
-				 mMenuItemSubmenu.setIcon( ContextCompat.getDrawable(getApplicationContext(),R.drawable.submenu_g));
-				 startTimer();
-			 }
-			 mAction = action;
-		
+			mMenuItemPlay.setEnabled(true);
+			mMenuItemPlay.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_play));
+
+			mMenuItemStop.setEnabled(false);
+			mMenuItemStop.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_stop_g));
+
+			mMenuItemSubmenu.setEnabled(true);
+			mMenuItemSubmenu.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.submenu));
+
+			stopTimer();
+		} else if (action == Action.record) {
+			mMenuItemRec.setEnabled(false);
+			mMenuItemRec.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_rec_g));
+
+			mMenuItemPlay.setEnabled(false);
+			mMenuItemPlay.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_play_g));
+
+			mMenuItemStop.setEnabled(true);
+			mMenuItemStop.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_stop));
+
+			mMenuItemSubmenu.setEnabled(false);
+			mMenuItemSubmenu.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.submenu_g));
+			startTimer();
+		} else if (action == Action.play) {
+			mMenuItemRec.setEnabled(false);
+			mMenuItemRec.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_rec_g));
+
+			mMenuItemPlay.setEnabled(false);
+			mMenuItemPlay.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_play_g));
+
+			mMenuItemStop.setEnabled(true);
+			mMenuItemStop.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.button_stop));
+
+			mMenuItemSubmenu.setEnabled(false);
+			mMenuItemSubmenu.setIcon(ContextCompat.getDrawable(
+					getApplicationContext(), R.drawable.submenu_g));
+			startTimer();
+		}
+		mAction = action;
+
 	}
 
+	/**
+	 * Set information on the bottom of the screen 
+	 * @param mode is a type of the information
+	 */
 	private void setInfo(int mode) {
 		if (mode == 0)
 			mInfo = getString(R.string.mode_info_random);
@@ -516,14 +506,18 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		surface.setMessage(mInfo, MType.info);
 	}
 
+	/**
+	 * Set mode of the application
+	 * @param mode : ""
+	 */
 	private void setMode(int mode) {
 			surface.setMode(mode);
 			
 		    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			int i = prefs.getInt("count", 3);
-			Params.timeWaiting = prefs.getInt("time_answer", 4);
-			Params.timeBetween = prefs.getInt("time_between_groups", 2);
-			
+		    // Parameters for the mode "Groups of the movements"
+			int i = prefs.getInt("count", 3); // Count of the movements in the group
+			Params.timeWaiting = prefs.getInt("time_answer", 4); // Time for the user answer
+			Params.timeBetween = prefs.getInt("time_between_groups", 2); // Time between groups
 			surface.setMaxCount(i);
 			
 			setInfo(mode);
@@ -531,7 +525,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 	@Override
 	  protected void onPause(){
-		  Log.d("","ON PAUSE");
 		  surface.pause();
 		  
 		  SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -550,6 +543,10 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		  super.onPause();
 	  }	  
 	 
+	/**
+	 * It shows results in the mode "Groups of the movements"
+	 * @param Ok - result
+	 */
 	private void dialogResult(boolean Ok){
 	 	String str;
 	 	surface.incGroupsCount();
@@ -564,11 +561,14 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		
 		surface.setMode(400);
 	}
-	
+
+	/**
+	 * Close Dialog after waiting and start moving again
+	 * Is used in the mode "Continues movings"  
+	 */
 	private Runnable closeDialogResult = new Runnable() { 
 		public void run() { 
 			handlerDlg.removeCallbacks(closeDialogResult);
-			//dialogResult.cancel();
 			surface.setMessage("", null);
 			surface.setMode(1);
 			surface.startMoving();
@@ -576,6 +576,9 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		} 
 	};        
 	
+	/**
+	 * Dialog before exit
+	 */
 	private void dialogExit(){
 	    new AlertDialog.Builder(this)
         .setMessage(getString(R.string.question_exit))
@@ -589,8 +592,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
         .show();
 	}
 	 
-//		seekBarSpeed.setVisibility(View.INVISIBLE);
-	
 	@SuppressLint("NewApi")
 	@Override
 	public void onBackPressed() {
@@ -605,35 +606,29 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_VOLUME_UP:
+			// If key Volume is pressed - show the speed control
 			surface.showSeekBarSpeed();
 			surface.addSeekBarProgressSpeed(-1);
 	        return true;
 	    case KeyEvent.KEYCODE_VOLUME_DOWN:
+			// If key Volume is pressed - show the speed control
 			surface.showSeekBarSpeed();
 			surface.addSeekBarProgressSpeed(1);
 	        return true;
 	    case KeyEvent.KEYCODE_MENU:
 			surface.pause();
             return false;	        
-	    //case KeyEvent.KEYCODE_BACK:
-		//	if (surface.isPlaying())
-		//	dialogExit();
-		//	return true;
 	    default:
 	    	
 	    return super.onKeyDown(keyCode, event);			
 		}
     }
-/*
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String prefName) {
-		if (prefName.equals("signal_for_correct_answer")){
-			signal_correct = sharedPreferences.getString("signal_for_correct_answer", "0");
-		}
-	}
-*/
-	
+
+	/**
+	 * Convert position of the media from ms to String
+	 * @param mediaPosition
+	 * @return position as String
+	 */
 	public static String msToString(long mediaPosition){
         long second = (mediaPosition / 1000) % 60;
         long minute = (mediaPosition / (1000 * 60)) % 60;
@@ -645,14 +640,11 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
       		  hour*1000 * 60 * 60);
 	}
 	
-	
 	class MyTimerTask extends TimerTask {
-
 		@Override
 		public void run() {
 			long time =  System.currentTimeMillis();
 			final String strDate = msToString(time-timeStart);
-			
 			surface.setMessage(strDate, MType.info);
 		}
 	}	

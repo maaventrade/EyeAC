@@ -68,8 +68,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
 	public interface MyCallback {
 		void callbackGroupFinish(); 
-		void callbackGroupOk(); 
-		void callbackGroupError(); 
+		void callbackGroupResult(boolean result); 
 		void onFinish(); 
 	} 
 	
@@ -381,11 +380,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 					if (groupMovingsAnswer[i] == null ||
 							!groupMovingsAnswer[i].equals(groupMovings[i])){
 						groupItemIndex = 0;
-						callback.callbackGroupError();
+						callback.callbackGroupResult(false);
 						return false;
 					}
 				}
-				callback.callbackGroupOk();
+				callback.callbackGroupResult(true);
 			}
 			return false;
 		}
