@@ -48,26 +48,23 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
     static final String PREFS_MODE = "PREFS_MODE";
     static final String FACE_NUMBER = "FACE_NUMBER";
 	 
-	Handler handlerDlg;
-	Handler handlerGrp;
-	 
-	AlertDialog dialogResult;
-      
+	Handler handlerDlg; // To show results, wait and hide results
+	Handler handlerGrp; // To wait users answer in the mode "Groups of the movements"
+	// To hide and show the action bar
 	ActionBar actionBar;
-	
-	 MenuItem mMenuItemRec; 
-	 MenuItem mMenuItemPlay; 
-	 MenuItem mMenuItemStop;
-	 MenuItem mMenuItemSubmenu;
-	 
+	// Menu items to set ebable/disable and change icon
+	MenuItem mMenuItemRec; 
+	MenuItem mMenuItemPlay; 
+	MenuItem mMenuItemStop;
+	MenuItem mMenuItemSubmenu;
+	// To shift screen buttons when the action bar is visible
 	int actionBarHeight;
-	
+	// Actions from action bar buttons. It is used  in the mode "move to button" 
 	enum Action {play, stop, record};
 	Action mAction;
 	
-	boolean mStop = false;
-	
-	Timer mTimer;
+	boolean mStop = false; // In the mode "move to button": replay finished
+	Timer mTimer; // To show time of the stored marks
 	MyTimerTask mMyTimerTask;
 	long timeStart;
 	
@@ -92,8 +89,9 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		mContext = this;
 		
 		actionBarHeight = getActionBarHeight();
-		
+		// If there is not found APP_FOLDER, create it
 		checkDirectory();
+		
 		//prefs.registerOnSharedPreferenceChangeListener(this);
 		
 		//surface.setRects(displaymetrics.widthPixels, displaymetrics.heightPixels);
@@ -105,6 +103,9 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		 
 	}
 	
+	/**
+	* If there is not found APP_FOLDER, create it
+	**/
 	private void checkDirectory() {
 		File file = new File(Params.APP_FOLDER);
 		if(!file.exists()){                          
