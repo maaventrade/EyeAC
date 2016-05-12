@@ -15,16 +15,17 @@ import com.alexmochalov.animation.SurfaceViewScreen.states.*;
 import java.util.*;
 
 /**
- * 
  * @author Alexey Mochalov
+ * SurfaceViewScreen provide creation of the visual elements, control of the Draw thread,
+ * selection of movement directions and so.  
  *
  */
 public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Callback, ElementCallback{
-	private Context context;
+	private Context mContext;
 	
 	// List of the elements of the face
 	private ArrayList <Element> elements;
-	// And additional references to eyes
+	// And references to every element
 	private ElementEye leftEye;
 	private ElementEye rightEye;
 	private ElementFace2 face;
@@ -32,14 +33,16 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	// Handler for pause 
 	private Handler handler = new Handler(); 
 
+	// Speed of the movements
     public int period = 50;
     
-    // If false - exclude Up, F, Dn;
+    // If false - exclude Up, F, Dn (6 screen buttons, otherwise 9 buttons);
 	private boolean allDirections = false; 
 	
+	// Store previous direction to avoid repeating
 	private int previ = 0;
 	private int prevj = 0;
-	private boolean prevGoBack = false;
+	private boolean prevGoBack = false; // True if previous movement come back 
 	
 	private String prevDir = "";
 	private String currentDir = "";
@@ -194,12 +197,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
     public SurfaceViewScreen(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.context = context;
+		mContext = context;
 		init();
 	}
 	public SurfaceViewScreen(Context context) {
         super(context);
-		this.context = context;
+		mContext = context;
 		init();
     }
     
@@ -260,7 +263,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 
     	elements.add(leftEye);
 		
-    	face = new ElementFace2(context, Color.BLACK, faceID);
+    	face = new ElementFace2(mContext, Color.BLACK, faceID);
     	
 		rightEye.setFace(face);
 		leftEye.setFace(face);
