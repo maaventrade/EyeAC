@@ -4,6 +4,7 @@ import android.content.*;
 import android.content.SharedPreferences.*;
 import android.graphics.*;
 import android.os.*;
+import android.preference.PreferenceManager;
 import android.util.*;
 import android.view.*;
 import android.view.MotionEvent.*;
@@ -17,9 +18,13 @@ import com.alexmochalov.animation.*;
 import java.util.*;
 
 public class SurfaceViewScreenButtons extends SurfaceViewScreen {
-	 Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+	Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
 	 
-	private Context context;
+	private static final String PREFS_OFFSETX = "PREFS_OFFSETX";
+	private static final String PREFS_OFFSETY = "PREFS_OFFSETY";
+	private static final String PREFS_ZOOM = "PREFS_ZOOM";
+	 
+	private Context mContext;
 	
 	private DrawThreadMy drawThreadMy;
 	  
@@ -56,9 +61,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 
 	public void setPrefs(SharedPreferences prefs)
 	{
-		this.prefs = prefs;
-		//drawThreadMy.offset(0,0,1);
-		
+		mPrefs = prefs;
 	}
 	public static class MessageType{
 		enum MType{info, ok, ups}
@@ -78,7 +81,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 
 	private double kZooming = 1;
 	
-	private SharedPreferences prefs;
+	private SharedPreferences mPrefs;
 
 
 	OnEventListener listener;
@@ -92,15 +95,15 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		if (this.isRandom()){
 			int count = getCount();
 			if (count == 0)
-				return context.getResources().getString(R.string.noresult);
-			else return ( context.getResources().getString(R.string.resultstr)+" <b>"+
+				return mContext.getResources().getString(R.string.noresult);
+			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
 				(int)((float)rightCount/count*100f)+"</b>% ("+rightCount+"/"+count+")");
 			
 		} else
 		if (this.isGroupAny()){
 			if (groupsCount == 0)
-				return context.getResources().getString(R.string.noresult);
-			else return ( context.getResources().getString(R.string.resultstr)+" <b>"+
+				return mContext.getResources().getString(R.string.noresult);
+			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
 				(int)((float)groupsCountRight/groupsCount*100f)+"</b>% ("+groupsCountRight+"/"+groupsCount+")");
 		} else 
 			return "Select mode Continious or Sets of movements";
@@ -110,13 +113,11 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	
 	public SurfaceViewScreenButtons(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.context = context;
-		//setWillNotDraw(false);
+		mContext = context;
 	}
 
 	public SurfaceViewScreenButtons(Context context) {
         super(context);
-		//setWillNotDraw(false);
     }
 	
 	public void setFileName(String fileName) {
@@ -124,7 +125,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 	
 	public void setParams() {
-		vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+		vibrator = (Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 		
 	
@@ -133,8 +134,6 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		seekBarSpeed.setSize(width, height);
 	}
 		
-	
-
 	public void createDrawThread1(){
     	if (drawThreadMy == null){
         	drawThreadMy = new DrawThreadMy(getHolder(), getElements(), this);
@@ -143,14 +142,14 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         	
         	if (mode == 999)
         		drawThreadMy.offset(
-        				prefs.getFloat("offsetX", 0), 
-        				prefs.getFloat("offsetY", 0), 
+        				mPrefs.getFloat(PREFS_OFFSETX, 0), 
+        				mPrefs.getFloat(PREFS_OFFSETY, 0), 
         				1);
         	else
         		drawThreadMy.offset(
-        				prefs.getFloat("offsetX", 0), 
-        				prefs.getFloat("offsetY", 0), 
-        				prefs.getFloat("zoom", 1));
+        				mPrefs.getFloat(PREFS_OFFSETX, 0), 
+        				mPrefs.getFloat(PREFS_OFFSETY, 0), 
+        				mPrefs.getFloat(PREFS_ZOOM, 1));
         	
     		//drawThreadMy.offset(0,0,1);
     		// <item>Get eyes coordinates (for designer)</item>
@@ -168,11 +167,11 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		boolean retry = true;
         // finish the thread wirking
     	if (drawThreadMy != null){
-			
-			Editor editor = prefs.edit();
-			editor.putFloat("offsetX", drawThreadMy.getOffsetX());
-			editor.putFloat("offsetY", drawThreadMy.getOffsetY());
-			editor.putFloat("zoom", drawThreadMy.getZoom());
+			// Save parameters the image
+			Editor editor = mPrefs.edit();
+			editor.putFloat(PREFS_OFFSETX, drawThreadMy.getOffsetX());
+			editor.putFloat(PREFS_OFFSETY, drawThreadMy.getOffsetY());
+			editor.putFloat(PREFS_ZOOM, drawThreadMy.getZoom());
 			editor.apply();
 			
 			
@@ -228,10 +227,41 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			addFaceElements2(width, height, scale, 82, R.drawable.face32, null, R.array.Dir2R, R.array.Dir2L);
 		else if (faceNumber == 21)
 			addFaceElements2(width, height, scale, 82, R.drawable.face3, 
-					BitmapFactory.decodeResource(context.getResources(), R.drawable.pupil31),
+					BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
 					R.array.Dir3R, R.array.Dir3L);
 			
-    	//createDrawThread();
+		
+		float offsetX = mPrefs.getFloat(PREFS_OFFSETX, 0); 
+		float offsetY = mPrefs.getFloat(PREFS_OFFSETY, 0); 
+		float zoom = mPrefs.getFloat(PREFS_ZOOM, -1);
+
+		if (zoom == -1){
+			// First start: align image to the center of the screen
+			Editor editor = mPrefs.edit();
+			zoom = Math.min(width, height)/getFaceWidth();
+			if (width < height){
+				offsetY = (height - (getFaceWidth()*zoom))/2;
+				offsetX = 0;
+			}	
+			else if (width > height){
+				offsetX = (width - (getFaceWidth()*zoom))/2;
+				offsetY = 0;
+			}	
+						
+			editor.putFloat(PREFS_OFFSETX, offsetX);
+			editor.putFloat(PREFS_OFFSETY, offsetY);
+			editor.putFloat(PREFS_ZOOM, zoom);
+			editor.apply();
+		}
+		
+		if (offsetX + 1024 * zoom < 0 || offsetY + 1024 * zoom < 0 || offsetX > width-50 || offsetY > height - 50 ){
+			Editor editor = mPrefs.edit();
+			editor.putFloat(PREFS_OFFSETX, 0);
+			editor.putFloat(PREFS_OFFSETY, 0);
+			editor.putFloat(PREFS_ZOOM, 1);
+			editor.apply();
+		}
+		
     	createDrawThread1();
     	
 		ButtonsList.listener = new ButtonsList.OnEventListener() {
@@ -247,7 +277,6 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 					listener.onTouchUp();
 			}
 		};
-    	
 	} 
   
 	public void draw(Canvas canvas, Paint paint) {
@@ -404,7 +433,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 				
 				int pointerIndex = event.getActionIndex();
 				
-				//Toast.makeText(context,""+pointerIndex,);
+				//Toast.makeText(mContext,""+pointerIndex,);
  
 				
 					x0 = event.getX(pointerIndex);

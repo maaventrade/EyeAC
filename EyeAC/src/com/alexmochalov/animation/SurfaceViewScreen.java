@@ -27,6 +27,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	// And additional references to eyes
 	private ElementEye leftEye;
 	private ElementEye rightEye;
+	private ElementFace2 face;
 	
 	// Handler for pause 
 	private Handler handler = new Handler(); 
@@ -229,8 +230,6 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 	
 	public void addFaceElements2(int width, int height, float scale, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
-		ElementFace2 face;
-		
 		float min;
 
 		if (width <= height){
@@ -602,6 +601,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 				pause();
 		}
 		
+	}
+
+
+	protected float getFaceWidth() {
+		return face.getWidth();
 	}
 
 	

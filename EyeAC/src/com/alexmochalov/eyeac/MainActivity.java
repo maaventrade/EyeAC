@@ -103,6 +103,11 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		 
 	}
 	
+	@Override
+	public void onStart() {
+		super.onStart();
+	}
+	
 	/**
 	* If there is not found APP_FOLDER, create it
 	**/
@@ -317,22 +322,6 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		super.onResume();
 		File file = new File(Params.APP_FOLDER+"/designer");
 		             
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		float i = prefs.getFloat("offsetX", 0); 
-		float j = prefs.getFloat("offsetY", 0); 
-		float k = prefs.getFloat("zoom", 1);
-		
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		
-		if (i + 1024 * k < 0 || j + 1024 * k < 0 || i > metrics.widthPixels-50 || j > metrics.heightPixels - 50 ){
-			Editor editor = prefs.edit();
-			editor.putFloat("offsetX", 0);
-			editor.putFloat("offsetY", 0);
-			editor.putFloat("zoom", 1);
-			editor.apply();
-		}
-		
 		Params.designMode = file.exists();               
 		//Params.designMode = true;               
 		
@@ -388,6 +377,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			}
 		};
 		
+	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    int period = Math.max(prefs.getInt(PREFS_PERIOD, 50), 10);
 		surface.setPeriod(period);
 		
