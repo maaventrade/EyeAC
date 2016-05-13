@@ -394,7 +394,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 						move(VAK, false);
 						if (listener != null)
 							listener.onTouchDown(VAK);
-					}else if (chooseDir(VAK)){
+					}else if (choiceOfDirIsProper(VAK)){
 	    				rightCount++;
 	    				if (signal == 1){
 	    					vibrator.vibrate(50);
@@ -649,13 +649,13 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 
 	public void incPeriod() {
-		period += 10;
-		setPeriod(period);
+		mPeriod += 10;
+		setPeriod(mPeriod);
 	}
 
 	public void decPeriod() {
-		period -= 10;
-		setPeriod(Math.max(period, 10));
+		mPeriod -= 10;
+		setPeriod(Math.max(mPeriod, 10));
 	}
 
 	public void setSignal(String signal) {

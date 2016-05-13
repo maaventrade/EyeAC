@@ -211,9 +211,9 @@ public class ElementEye extends Element
 
 	/**
 	 * Stops moving
-	 * @return True if Eye returned to the center (not obvious to move back) 
+	 * @return False if Eye returned to the center (not obvious to move back) 
 	 */
-	public boolean finish() {
+	public boolean finishAndGoBack() {
 		mMoved = false;
 		if (mastGoBack){
 			mastGoBack = false;
@@ -221,8 +221,8 @@ public class ElementEye extends Element
 			// Start moving back to the center
 			startMoving(x0 , y0, period, false);
 			
-			return false;
-		} else return true;
+			return true;
+		} else return false;
 	}
 
 	/**

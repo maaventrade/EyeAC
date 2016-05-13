@@ -34,7 +34,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	private Handler handler = new Handler(); 
 
 	// Speed of the movements
-    public int period = 50;
+    public int mPeriod = 50;
     
     // If false - exclude Up, F, Dn (6 screen buttons, otherwise 9 buttons);
 	private boolean allDirections = false; 
@@ -45,8 +45,8 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	private boolean prevGoBack = false; // True if previous movement come back 
 	
 	private String prevDir = "";
-	private String currentDir = "";
-	private String currentDirStr = "";
+	private String currentDir = ""; // Current direction as a string ("Ar","Vr"...)
+	//private String currentDirStr = ""; Concatenated currentDir for debugging
 	private int movingsCount = 0;
 	// mMode (mode) of the application
 	public static 
@@ -55,8 +55,8 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
 	protected boolean mPause = true;
 	protected boolean isMovedResized = false; // If image is moved and resised
-	private boolean comeBack = false;
-	private boolean dirSelected = false;
+	private boolean mEyesAreReturning = false;
+	private boolean mDirSelected = false; // User select dir by tpuchng screen button
 	
 	private int mMaxCount; // The max count of the eyes movings in thr Group mode;
 	private int count; // The counter of the count;
@@ -218,13 +218,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	* This method create the face 
 	*/
 	public void addFaceElements2(int width, int height, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
-
 		rightEye = new ElementEye(radius, "right", getResources().getStringArray(rDirID), 
 				pupilBitmap);
 		rightEye.event = this;
 
     	elements.add(rightEye);
-
 
     	leftEye = new ElementEye(radius, "left", getResources().getStringArray(lDirID), 
     			pupilBitmap);
@@ -238,15 +236,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		leftEye.setFace(face);
 
     	elements.add(face);
-    	
 	}
 	
-	//abstract void createDrawThread();
-    	
 	@Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
         int height) {
-    	//createDrawThread();
 	}
 
     @Override
@@ -287,6 +281,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		else pause();
 	}
 	
+	/**
+	 * Get current direction as a string for the indexes
+	 * @param i 1 is moving right, -1 is moving left, 0 no moving by horizontal
+	 * @param j 1 is moving down, -1 is moving up, 0 no moving by vertical
+	 * @return direction as a string
+	 */
 	private String getCurrentDir(int i, int j){
 		if (i == 0 && j == 1)
 			return "Dn";
@@ -316,38 +316,36 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		return prevDir;
 	}
 	
+	/*
 	public String getCurrentDirStr()
 	{
-		// TODO: Implement 
 		return currentDirStr;
 	}
+	*/
 	
-	
-	public boolean chooseDir(String dir){
-		//Log.d("", "dir "+dir);
-		//Log.d("", "prevDir "+prevDir);
-		//Log.d("", "currentDir "+currentDir);
+	/**
+	 * Test if user selected proper direction by touching button 
+	 * Is used in the modes "Continues movings" and "Groups of moving" 
+	 * @param dir - is directory of moving as string
+	 * @return
+	 */
+	public boolean choiceOfDirIsProper(String dir){
 		if (mMode == Mode.random){
-			if (dirSelected)
+			if (mDirSelected)      // User already have selected direction   
 				return false;
 			else {
-				dirSelected = true;
-				return (dir.equals(prevDir)
+				mDirSelected = true;
+				return (dir.equals(prevDir) // Compare
 					|| dir.equals(currentDir));
 			}
 		} else 
 		if (mMode == Mode.groupWait){
-			if (groupMovingsAnswer == null)
+			if (groupMovingsAnswer == null) //
 				return false;
 			
 			groupMovingsAnswer[groupItemIndex] = dir;
 			groupItemIndex++;
 			if (groupItemIndex == mMaxCount){
-				//for (int i = 0; i < groupMovings.length; i++){
-				//	Log.d("",groupMovings[i]);
-				//	Log.d("",groupMovingsAnswer[i]);
-				//}
-				
 				for (int i = 0; i < groupMovings.length; i++){
 					if (groupMovingsAnswer[i] == null ||
 							!groupMovingsAnswer[i].equals(groupMovings[i])){
@@ -371,80 +369,88 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		movingsCount = 0;
 	}
 	
+	/**
+	 * Returning of eyes is started 
+	 */
 	public void resetDirs(){
 		currentDir = "";
 		prevDir = "";
-		comeBack = true;
+		mEyesAreReturning = true;
 	}
 	
-	public void move(String action, boolean goBack)
+	/**
+	 * 
+	 * @param dir
+	 * @param goBack
+	 */
+	public void move(String dir, boolean goBack)
 	{
-		if (action == null)
+		if (dir == null)
 			return;
 		
 		int i = 0, j = 0;
 		
-		if (action.equals("Up")){
+		if (dir.equals("Up")){
 			i = 0;
 			j = -1;
 		}
-		else if (action.equals("Vr")){
+		else if (dir.equals("Vr")){
 			i = 1;
 			j = -1;
 		}
-		else if (action.equals("Ar")){
+		else if (dir.equals("Ar")){
 			i = 1;
 			j = 0;
 		}
-		else if (action.equals("Ad")){
+		else if (dir.equals("Ad")){
 			i = 1;
 			j = 1;
 		}
-		else if (action.equals("Dn")){
+		else if (dir.equals("Dn")){
 			i = 0;
 			j = 1;
 		}
-		else if (action.equals("K")){
+		else if (dir.equals("K")){
 			i = -1;
 			j = 1;
 		}
-		else if (action.equals("Ac")){
+		else if (dir.equals("Ac")){
 			i = -1;
 			j = 0;
 		}
-		else if (action.equals("Vc")){
+		else if (dir.equals("Vc")){
 			i = -1;
 			j = -1;
 		}
-		else if (action.equals("F")){
+		else if (dir.equals("F")){
 			i = 0;
 			j = 0;
 		} else return;
 		
-		//goBack = false;
-		
 		if (i == 0 && j == 0){
 			// Moving F
-			rightEye.movingCoords(1, 100, period, goBack, true, true);
-			leftEye.movingCoords(-1, 100, period, goBack, true, true);
+			rightEye.movingCoords(1, 100, mPeriod, goBack, true, true);
+			leftEye.movingCoords(-1, 100, mPeriod, goBack, true, true);
 		} else {
 			// Moving Ar,Up,Ac and so on.
-			rightEye.movingCoords(i, j, period, goBack, true, true);
-			leftEye.movingCoords(i, j, period, goBack, true, true);
+			rightEye.movingCoords(i, j, mPeriod, goBack, true, true);
+			leftEye.movingCoords(i, j, mPeriod, goBack, true, true);
 		}
 	}
 	
 
 	public void returnToCenter()
 	{
-		rightEye.movingCoords(9, 9, period, false, false, true);
-		leftEye.movingCoords(9, 9, period, false, false, true);
+		rightEye.movingCoords(9, 9, mPeriod, false, false, true);
+		leftEye.movingCoords(9, 9, mPeriod, false, false, true);
 	}
 	
-
+	/**
+	 * Moving of eyes is started
+	 */
 	public void startMoving() {
 		mPause = false;
-		comeBack = false;
+		mEyesAreReturning = false;
 		if (mMode == Mode.group){
 			count = mMaxCount;
 			groupMovings = new String[count];
@@ -491,12 +497,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		prevGoBack = goBack;
 		
 		prevDir = currentDir;
-		currentDirStr = currentDirStr+" "+getCurrentDir(i, j);
+		// currentDirStr = currentDirStr+" "+getCurrentDir(i, j); // for debugging
 		currentDir = getCurrentDir(i, j);
-		//if (!currentDir.equals("")) 
-			movingsCount++;
+		movingsCount++;
 			
-		dirSelected = false;
+		mDirSelected = false;
 		
 		float k = 1.5f;
 		//i = 0;
@@ -512,11 +517,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		//i = -1;
 		//j = -1;
 		if (i == 0 && j == 0){
-			rightEye.movingCoords(1, 100, period, goBack, true, false);
-			leftEye.movingCoords(-1, 100, period, goBack,  true, false);
+			rightEye.movingCoords(1, 100, mPeriod, goBack, true, false);
+			leftEye.movingCoords(-1, 100, mPeriod, goBack,  true, false);
 		} else {
-			rightEye.movingCoords(i, j, period, goBack, true, false);
-			leftEye.movingCoords(i, j, period, goBack, true, false);
+			rightEye.movingCoords(i, j, mPeriod, goBack, true, false);
+			leftEye.movingCoords(i, j, mPeriod, goBack, true, false);
 			//rightEye.setMoving(i * eyeWidth/1.5f, j *  eyeHeight/1.5f, period, goBack, true);
 			//leftEye.setMoving(i * eyeWidth/1.5f, j *  eyeHeight/1.5f, period, goBack, true);
 			
@@ -529,23 +534,23 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	public void setPeriod(int period) {
-		this.period =  period;
+		mPeriod =  period;
 	} 
 	
 	public int getPeriod() {
-		return period;
+		return mPeriod;
 	}
 	
-	@Override  
-    public void onDraw(Canvas canvas) {
-	}
-
 	@Override
+	/**
+	 * When one of the eyes is near finish of the moving, this event arise
+	 */
 	public void goFinish() {
-		boolean f1 = rightEye.finish();
-		boolean f2 = leftEye.finish();
+		boolean rMustGoBack = rightEye.finishAndGoBack();
+		boolean lMustGoBack = leftEye.finishAndGoBack();
 		
-		if ((f1 || f2) && !comeBack){
+		if ( !rMustGoBack && !lMustGoBack && !mEyesAreReturning){
+			// Eyes must not go back  
 			if (mMode == Mode.group){
 				count--;
 				if (count == 0){
@@ -554,7 +559,6 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 					callback.callbackGroupFinish();
 					return;
 				}
-					
 			}
 			if (modeIsToButton()){
 				callback.onFinish();
@@ -569,15 +573,17 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 			}
 		} else {
 			if (modeIsToButton())
+				// In this mode app wait while user touch up  
 				pause();
 		}
 		
 	}
 
-
+	/**
+	 * Returns face bitmap width in pixels
+	 */
 	protected float getFaceWidth() {
 		return face.getWidth();
 	}
 
-	
 }
