@@ -220,13 +220,13 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		
 		Log.d("","Face number "+faceNumber);
 		if (faceNumber == 0)
-			addFaceElements2(width, height, scale, 65, R.drawable.face0, null, R.array.Dir0R, R.array.Dir0L);
+			addFaceElements2(width, height, 65, R.drawable.face0, null, R.array.Dir0R, R.array.Dir0L);
 		else if (faceNumber == 1)
-			addFaceElements2(width, height, scale, 38, R.drawable.face21, null, R.array.Dir2R, R.array.Dir2L);
+			addFaceElements2(width, height, 38, R.drawable.face21, null, R.array.Dir2R, R.array.Dir2L);
 		else if (faceNumber == 2)
-			addFaceElements2(width, height, scale, 82, R.drawable.face32, null, R.array.Dir2R, R.array.Dir2L);
+			addFaceElements2(width, height, 82, R.drawable.face32, null, R.array.Dir2R, R.array.Dir2L);
 		else if (faceNumber == 21)
-			addFaceElements2(width, height, scale, 82, R.drawable.face3, 
+			addFaceElements2(width, height, 82, R.drawable.face3, 
 					BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
 					R.array.Dir3R, R.array.Dir3L);
 			
@@ -371,7 +371,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			
 			setCoord(X, 
 					Y,  
-					X, drawThreadMy.getOffsetX()+ (1000*zoom)/2);
+					drawThreadMy.getOffsetX()+ (1000*zoom)/2);
 			
 		 	
 //			message = ""+(X - drawThreadMy.getOffsetX())+"  "+(Y - drawThreadMy.getOffsetY());
@@ -573,7 +573,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
                 return true;
         	}
         	
-        	if (isGroup() && isPlaying()){
+        	if (isGroup() && !mPause){
             	if (!ButtonsList.ACTION_UP())
             		;//pauseCont();
         		return true;
@@ -584,7 +584,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         		return true;
         	}
         	
-			if (!isPlaying()){
+			if (mPause){
         		startMoving();
 				Log.d("","2");
         		return true;

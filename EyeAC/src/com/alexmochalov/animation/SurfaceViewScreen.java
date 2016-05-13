@@ -10,7 +10,7 @@ import android.view.*;
 import android.widget.*;
 
 import com.alexmochalov.animation.ElementEye.*;
-import com.alexmochalov.animation.SurfaceViewScreen.states.*;
+
 
 import java.util.*;
 
@@ -48,18 +48,17 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	private String currentDir = "";
 	private String currentDirStr = "";
 	private int movingsCount = 0;
-	// State (mode) of the application
-	public static class states{
-		enum State{coords, random, group, groupWait, groopBetween, toButton}
-	}
-	private static State state;
+	// mMode (mode) of the application
+	public static 
+		enum Mode{coords, random, group, groupWait, groopBetween, toButton}
+	private static Mode mMode;
 	
-	private boolean pause = true;
+	protected boolean mPause = true;
 	protected boolean isMovedResized = false; // If image is moved and resised
 	private boolean comeBack = false;
 	private boolean dirSelected = false;
 	
-	private int maxCount; // The max count of the eyes movings in thr Group mode;
+	private int mMaxCount; // The max count of the eyes movings in thr Group mode;
 	private int count; // The counter of the count;
 	
 	private String groupMovings[];
@@ -79,10 +78,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	public boolean canPressBytton()
 	{
 		if (isMovedResized) return false;
-		if (state == State.toButton) return true;
-		if (pause || state == State.groopBetween) return false;
-		else if (state == State.random 
-			|| state == State.groupWait ) return true;
+		if (mMode == Mode.toButton) return true;
+		if (mPause || mMode == Mode.groopBetween) return false;
+		else if (mMode == Mode.random 
+			|| mMode == Mode.groupWait ) return true;
 		return false;
 	}
 
@@ -91,84 +90,85 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	/**
-	*
+	* Set mode and pause mMode
 	**/
 	public void setMode(int mode)
 	{
 		switch (mode){
 			case 0: 
-				state = State.random;
+				mMode = Mode.random;
 				break;
 			case 1: 
-				state = State.group;
-				count = maxCount;
+				mMode = Mode.group;
+				count = mMaxCount;
 				groupMovings = new String[count];
 				groupMovingsAnswer = new String[count];
 				break;
 			case 2: 
-				state = State.toButton;
+				mMode = Mode.toButton;
 				break;
 			case 300: 
-				state = State.groupWait;
-				pause = false;
+				mMode = Mode.groupWait;
+				mPause = false;
 				break;
 			case 301: 
-				//state = State.resize;
-				pause = true;
+				//mMode = Mode.resize;
+				mPause = true;
 				break;
 			case 400: 
-				state = State.groopBetween;
+				mMode = Mode.groopBetween;
 				break;
 			case 999: 
-				state = State.coords;
-				pause = true;
+				mMode = Mode.coords;
+				mPause = true;
 				break;
 		}
 	}
 	
-	public boolean isPlaying()
-	{
-		return !pause;
-	}
+	//public boolean isPlaying()
+	//{
+		//return !pause;
+	//}
 	
 	public boolean isWaiting()
 	{
-		return state == State.groupWait;
+		return mMode == Mode.groupWait;
 	}
 	
 	public boolean isGroup()
 	{
-		return state == State.group;
+		return mMode == Mode.group;
 	}
-	
-	public boolean isResized()
-	{
-		return isMovedResized;
-	}
-		
 	
 	public boolean isGroupAny()
 	{
-		return state == State.group ||  state == State.groupWait || state == State.groopBetween;
+		return mMode == Mode.group ||  mMode == Mode.groupWait || mMode == Mode.groopBetween;
 	}
 	
 	public boolean isRandom()
 	{
-		return state == State.random;
+		return mMode == Mode.random;
 	}
 	
 	public boolean modeIsToButton()
 	{
-		return state == State.toButton;
+		return mMode == Mode.toButton;
 	}
 	
 	public boolean isCoords()
 	{
-		return state == State.coords && !isMovedResized;
+		return mMode == Mode.coords && !isMovedResized;
 	}
 	
-	public void setCoord(float x, float y, float X, float halfWidth) {
-		if (X < halfWidth)
+	/*
+	* Set coordinates of the Eyes in the mode "Coords"
+	*
+	*@param x is the x coordinate of the touch
+	*@param y is the y coordinate of the touch
+	*@param centerOfTheFace is center of the face
+	*/
+	public void setCoord(float x, float y, float centerOfTheFace) {
+		if (x < centerOfTheFace)
 			rightEye.setCoord(x , y);
 		else
 			leftEye.setCoord(x , y);
@@ -178,10 +178,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	{
 		return allDirections;
 	}
-	
+	/*
+	* Set the max count of the eyes movings in thr Group mode;
+	*/
 	public void setMaxCount(int maxCount)
 	{
-		this.maxCount = maxCount;
+		mMaxCount = maxCount;
 	}
 	
 	public void setAllDirections(boolean allDirections)
@@ -189,26 +191,21 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		this.allDirections = allDirections;
 	}
 	
-	private void init(){
-        getHolder().addCallback(this);
-	}
 	
     public SurfaceViewScreen(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
-		init();
+		getHolder().addCallback(this);
 	}
 	public SurfaceViewScreen(Context context) {
         super(context);
 		mContext = context;
-		init();
+		getHolder().addCallback(this);
     }
     
-	interface TouchEventCallback { 
-		//void callbackCall(); 
-		//void callbackPhoto(); 
-	}
-	
+	/*
+	* Add element to the list of the elements
+	*/
 	public void add(Element e){
     	elements.add(e);
 	}
@@ -217,34 +214,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		return elements; 
 	}
 	
-	int GAP = 20; 
-	int BORDER = 5; 
-	
-	public  void getCStr(Context context){
-		/****************************/
-		//Log.d("", ""+"<item>"+rightEye.getCenter().x+"</item>\n"+"<item>"+rightEye.getCenter().y+"</item>\n"+
-		//		"<item>"+leftEye.getCenter().x+"</item>\n"+ "<item>"+leftEye.getCenter().y+"</item>\n"
-		//		);
-		
-    	
-	}
-	
-	public void addFaceElements2(int width, int height, float scale, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
-		float min;
-
-		if (width <= height){
-			min = width;
-		} else {
-			min = height;
-		}
-//this.scale = scale;
-//		float centerX = width/2;
-//		float centerY = height/2;
-
-//		centerRight.x = centerX + radius*0.5582419f;
-//		centerRight.y = centerY + radius*0.1846154f;
-
-		//elements.add(new ElementCircle(centerX, (height)/2, Color.WHITE, radius));
+	/*
+	* This method create the face 
+	*/
+	public void addFaceElements2(int width, int height, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
 
 		rightEye = new ElementEye(radius, "right", getResources().getStringArray(rDirID), 
 				pupilBitmap);
@@ -252,8 +225,6 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 
     	elements.add(rightEye);
 
-//    	centerLeft.x = centerX + radius*-0.14065935f;
-//    	centerLeft.y = centerY + radius*0.22417584f;
 
     	leftEye = new ElementEye(radius, "left", getResources().getStringArray(lDirID), 
     			pupilBitmap);
@@ -300,7 +271,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 			if (e != null)
 				e.stop();
 		
-		pause = true;
+		mPause = true;
 	}
 
 	public void cont() {
@@ -308,11 +279,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 			if (e != null)
 				e.cont();
 		
-		pause = false;
+		mPause = false;
 	}
 
 	public void pauseCont() {
-		if (pause) cont();
+		if (mPause) cont();
 		else pause();
 	}
 	
@@ -356,7 +327,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		//Log.d("", "dir "+dir);
 		//Log.d("", "prevDir "+prevDir);
 		//Log.d("", "currentDir "+currentDir);
-		if (state == State.random){
+		if (mMode == Mode.random){
 			if (dirSelected)
 				return false;
 			else {
@@ -365,13 +336,13 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 					|| dir.equals(currentDir));
 			}
 		} else 
-		if (state == State.groupWait){
+		if (mMode == Mode.groupWait){
 			if (groupMovingsAnswer == null)
 				return false;
 			
 			groupMovingsAnswer[groupItemIndex] = dir;
 			groupItemIndex++;
-			if (groupItemIndex == maxCount){
+			if (groupItemIndex == mMaxCount){
 				//for (int i = 0; i < groupMovings.length; i++){
 				//	Log.d("",groupMovings[i]);
 				//	Log.d("",groupMovingsAnswer[i]);
@@ -472,10 +443,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
 
 	public void startMoving() {
-		pause = false;
+		mPause = false;
 		comeBack = false;
-		if (state == State.group){
-			count = maxCount;
+		if (mMode == Mode.group){
+			count = mMaxCount;
 			groupMovings = new String[count];
 			groupMovingsAnswer = new String[count];
 			
@@ -533,10 +504,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		
 		//Log.d("","currentDir "+currentDir);
 		
-		if (state == State.group){
+		if (mMode == Mode.group){
 			if (count == 1)
 				goBack = true;
-			groupMovings[maxCount-count] = currentDir;
+			groupMovings[mMaxCount-count] = currentDir;
 		}	
 		//i = -1;
 		//j = -1;
@@ -575,7 +546,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		boolean f2 = leftEye.finish();
 		
 		if ((f1 || f2) && !comeBack){
-			if (state == State.group){
+			if (mMode == Mode.group){
 				count--;
 				if (count == 0){
 					pause();
