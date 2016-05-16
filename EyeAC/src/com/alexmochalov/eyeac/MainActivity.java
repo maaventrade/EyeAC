@@ -571,7 +571,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 			handlerDlg.removeCallbacks(closeDialogResult);
 			surface.setMessage("", null);
 			surface.setMode(1);
-			surface.startMoving();
+			surface.restartMoving();
 			
 		} 
 	};        

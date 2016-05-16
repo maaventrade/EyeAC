@@ -215,7 +215,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 	
 	/*
-	* This method create the face 
+	* This method creates the face 
 	*/
 	public void addFaceElements2(int width, int height, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
 		rightEye = new ElementEye(radius, "right", getResources().getStringArray(rDirID), 
@@ -379,9 +379,9 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 	
 	/**
-	 * 
-	 * @param dir
-	 * @param goBack
+	 * Starts moving of the eyes to the defined direction
+	 * @param dir - direction of moving as string
+	 * @param goBack - true if the eyes must return to the center
 	 */
 	public void move(String dir, boolean goBack)
 	{
@@ -428,7 +428,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		} else return;
 		
 		if (i == 0 && j == 0){
-			// Moving F
+			// Moving forvard
 			rightEye.movingCoords(1, 100, mPeriod, goBack, true, true);
 			leftEye.movingCoords(-1, 100, mPeriod, goBack, true, true);
 		} else {
@@ -438,7 +438,9 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		}
 	}
 	
-
+	/**
+	 * Starts returning of the eyes to the center
+	*/
 	public void returnToCenter()
 	{
 		rightEye.movingCoords(9, 9, mPeriod, false, false, true);
@@ -446,52 +448,56 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	}
 	
 	/**
-	 * Moving of eyes is started
+	 * Restart moving after pause
 	 */
-	public void startMoving() {
+	public void restartMoving() {
 		mPause = false;
 		mEyesAreReturning = false;
 		if (mMode == Mode.group){
 			count = mMaxCount;
 			groupMovings = new String[count];
 			groupMovingsAnswer = new String[count];
-			
 		}
 		random();
 	}
 
-		
+	/**
+	* Starts random moving of the eyes
+	*/
 	public void random() {
 		int i, j;
 		boolean goBack;
 		
 		double r;
-
 		r = Math.random(); 
 		if (r <= 0.3f) j = 1; // down
 		else if (r <= 0.6f) j = -1; // up
-		else j = 0;
+		else j = 0; // horizontal
 		
 		if (allDirections){
 			r = Math.random(); 
 			if (r <= 0.3f) i = 1; // right
 			else if (r <= 0.6f) i = -1; // left
-			else i = 0;
+			else i = 0; // forward
 		} else {
 			r = Math.random(); 
-			if (r <= 0.555555f) i = 1;
-			else  i = -1;
+			if (r <= 0.555555f) i = 1; // right
+			else  i = -1; // left
 		}
 		
+		// Define if eyes must come back to the center
 		r = Math.random(); 
 		if (r <= 0.5f) goBack = true;
 		else goBack = false;
 		
+		// If eyes didn"t return to the center
+		// avoid repeation
 		if (previ == i && prevj == j && prevGoBack == false){
 			i = -i;
 			j = -j;
 		}
 		
+		// save current values
 		previ = i;
 		prevj = j;
 		prevGoBack = goBack;
@@ -503,34 +509,22 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 			
 		mDirSelected = false;
 		
-		float k = 1.5f;
-		//i = 0;
-		//j = 1;
-		
-		//Log.d("","currentDir "+currentDir);
-		
 		if (mMode == Mode.group){
 			if (count == 1)
 				goBack = true;
+			// Save to the array for a comparing with
+			// users answers
 			groupMovings[mMaxCount-count] = currentDir;
 		}	
-		//i = -1;
-		//j = -1;
+		
 		if (i == 0 && j == 0){
+			// move forward
 			rightEye.movingCoords(1, 100, mPeriod, goBack, true, false);
 			leftEye.movingCoords(-1, 100, mPeriod, goBack,  true, false);
 		} else {
 			rightEye.movingCoords(i, j, mPeriod, goBack, true, false);
 			leftEye.movingCoords(i, j, mPeriod, goBack, true, false);
-			//rightEye.setMoving(i * eyeWidth/1.5f, j *  eyeHeight/1.5f, period, goBack, true);
-			//leftEye.setMoving(i * eyeWidth/1.5f, j *  eyeHeight/1.5f, period, goBack, true);
-			
 		}
-		
-
-		//Log.d("", " i "+i+" j "+j+" goBack "+goBack);
-		
-		//isPlaying = true;
 	}
 
 	public void setPeriod(int period) {

@@ -16,10 +16,16 @@ import com.alexmochalov.eyeac.SurfaceViewScreenButtons.MessageType.*;
 import com.alexmochalov.animation.*;
 
 import java.util.*;
-
+/**
+ * @author Alexey Mochalov
+ * SurfaceViewScreenButtons provide 
+ * 
+ *
+ */
 public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-	 
+	
+	// For moving and zooming of the face picture
 	private static final String PREFS_OFFSETX = "PREFS_OFFSETX";
 	private static final String PREFS_OFFSETY = "PREFS_OFFSETY";
 	private static final String PREFS_ZOOM = "PREFS_ZOOM";
@@ -28,68 +34,63 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	
 	private DrawThreadMy drawThreadMy;
 	  
-	private String fileName = "";
-	   
-
+	// Visual speed control
 	private SeekBarSpeed seekBarSpeed = new SeekBarSpeed();
-	
-	private RectF[] rectsSaved = new RectF[2];
-	
-	private int groupsCount = 0;
-	private int groupsCountRight = 0;
-	  
-//	private int period = 50;
-	
-    private float scale;
+	// In the mode "Groups of moving"
+	private int mGroupsCount = 0; // Count of the movings in the group
+	private int mGroupsCountRight = 0; // Count of the proper users touchings
+    // In the mode "Continious moving"
+	private int mRightCount = 0; // Count of the proper users touchings
     
-	private int rightCount = 0;
-    
-	private int signal;
-	private Paint paint;
-	
-	//MyCallback callback = null;
+	private int mSignal; // Kind of the signal on theb
 	private Vibrator vibrator;
-	
+	// A message on the bottom of the screen
 	private String message = "";
+	private static MType messageType;
 	
-	int textTopShift;
+	private int textTopShift; // Shift text on the top buttons when the acrion bar is visible
+
+	private int mFaceNumber;
+	private int mMode;
+	
+	// Position of the previous touch (for zoom and offset mode)
+	private float x0;
+	private float y0;
+	private double distance = 0; // Distance between fingers 
+	private Point center = new Point();
+	private double kZooming = 1;
+
+	private SharedPreferences mPrefs;
+	
 
 	public void setTextTopShift(int shift)
 	{
 		textTopShift = shift;
 	}
-
+	/**
+	* Store preferences
+	*/
 	public void setPrefs(SharedPreferences prefs)
 	{
 		mPrefs = prefs;
 	}
+	
+	/**
+	* Set type of the message on the buttom of the screen
+	*/
 	public static class MessageType{
 		enum MType{info, ok, ups}
 	}
 	
-	private static MType messageType;	
-
-	private int faceNumber;
-	private int mode;
-	
-	private float x0;
-	private float y0;
-
-	private double distance = 0; // Distance between fingers 
-
-	private Point center = new Point();
-
-	private double kZooming = 1;
-	
-	private SharedPreferences mPrefs;
-
-
 	OnEventListener listener;
 	public interface OnEventListener{
 		public void onTouchDown(String VAC);
 		public void onTouchUp();
 	}
 	
+	/*
+	* Creates a text strig from the results data
+	*/
 	public String getResultStr()
 	{
 		if (this.isRandom()){
@@ -97,14 +98,14 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			if (count == 0)
 				return mContext.getResources().getString(R.string.noresult);
 			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
-				(int)((float)rightCount/count*100f)+"</b>% ("+rightCount+"/"+count+")");
+					(int)((float)mRightCount/count*100f)+"</b>% ("+mRightCount+"/"+count+")");
 			
 		} else
 		if (this.isGroupAny()){
-			if (groupsCount == 0)
+			if (mGroupsCount == 0)
 				return mContext.getResources().getString(R.string.noresult);
 			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
-				(int)((float)groupsCountRight/groupsCount*100f)+"</b>% ("+groupsCountRight+"/"+groupsCount+")");
+					(int)((float)mGroupsCountRight/mGroupsCount*100f)+"</b>% ("+mGroupsCountRight+"/"+mGroupsCount+")");
 		} else 
 			return "Select mode Continious or Sets of movements";
 		
@@ -120,27 +121,26 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         super(context);
     }
 	
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
 	
 	public void setParams() {
 		vibrator = (Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE);
 	}
-		
-	
 	
 	public void setSeekBarSpeedRect(int width, int height){
 		seekBarSpeed.setSize(width, height);
 	}
 		
+	/*
+	* Create the draw thread
+	*/
 	public void createDrawThread1(){
     	if (drawThreadMy == null){
         	drawThreadMy = new DrawThreadMy(getHolder(), getElements(), this);
         	drawThreadMy.setRunning(true);
         	drawThreadMy.start();
         	
-        	if (mode == 999)
+        	if (mMode == 999)
+				// In the mode "Coordinates" no zooming
         		drawThreadMy.offset(
         				mPrefs.getFloat(PREFS_OFFSETX, 0), 
         				mPrefs.getFloat(PREFS_OFFSETY, 0), 
@@ -173,8 +173,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			editor.putFloat(PREFS_OFFSETY, drawThreadMy.getOffsetY());
 			editor.putFloat(PREFS_ZOOM, drawThreadMy.getZoom());
 			editor.apply();
-			
-			
+		
     		drawThreadMy.setRunning(false);
             while (retry) {
                 try {
@@ -189,18 +188,22 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		super.surfaceDestroyed(holder);
     }
 	
-    public void setFaceNumber(int param)
+    public void setFaceNumber(int faceNumber)
 	{
-		faceNumber = param;
+		mFaceNumber = faceNumber;
 	}
 	
-    public void setMode(int param)
+    public void setMode(int mode)
 	{ 
-		mode = param;
-		super.setMode(param);
+		mMode = mode;
+		super.setMode(mMode);
 	}
 	
 	@Override
+	/*
+	* Set visual elementsp: screen buttons, face image, seek bar
+	* Create draw thread
+	*/
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
 							   int height) {
 		Params.width = width;
@@ -210,27 +213,20 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		setSeekBarSpeedRect(width, height);
   
 		setParams();
-		/*
-		if (width >= height)
-			scale = 0.58f;
-		else 
-			scale = 0.65f;
-		*/
-		scale = 1;
 		
-		Log.d("","Face number "+faceNumber);
-		if (faceNumber == 0)
+		//Log.d("","Face number "+mFaceNumber);
+		if (mFaceNumber == 0)
 			addFaceElements2(width, height, 65, R.drawable.face0, null, R.array.Dir0R, R.array.Dir0L);
-		else if (faceNumber == 1)
+		else if (mFaceNumber == 1)
 			addFaceElements2(width, height, 38, R.drawable.face21, null, R.array.Dir2R, R.array.Dir2L);
-		else if (faceNumber == 2)
+		else if (mFaceNumber == 2)
 			addFaceElements2(width, height, 82, R.drawable.face32, null, R.array.Dir2R, R.array.Dir2L);
-		else if (faceNumber == 21)
+		else if (mFaceNumber == 21)
 			addFaceElements2(width, height, 82, R.drawable.face3, 
 					BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
 					R.array.Dir3R, R.array.Dir3L);
 			
-		
+		// Get prefetences
 		float offsetX = mPrefs.getFloat(PREFS_OFFSETX, 0); 
 		float offsetY = mPrefs.getFloat(PREFS_OFFSETY, 0); 
 		float zoom = mPrefs.getFloat(PREFS_ZOOM, -1);
@@ -253,7 +249,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			editor.putFloat(PREFS_ZOOM, zoom);
 			editor.apply();
 		}
-		
+		// Reset image coordinates if image is out of screen bounds
 		if (offsetX + 1024 * zoom < 0 || offsetY + 1024 * zoom < 0 || offsetX > width-50 || offsetY > height - 50 ){
 			Editor editor = mPrefs.edit();
 			editor.putFloat(PREFS_OFFSETX, 0);
@@ -278,13 +274,16 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			}
 		};
 	} 
-  
+  	
+	/*
+	* This method is called from the fraw thread
+	*/
 	public void draw(Canvas canvas, Paint paint) {
     	// Draw buttons
 		ButtonsList.draw(canvas, paint, this, textTopShift);
-		
+		// Draw seek bar
 		seekBarSpeed.draw(canvas, paint, this);
-		
+		// Draw message
 		if (message.length() > 0){
 			paint.setColor(Params.colorMessageText);
 			paint.setTextSize(30);
@@ -330,14 +329,16 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
  
 	public int getRightCount(){
-		return rightCount;
+		return mRightCount;
 	}
 	 
 	public void resetRightCount(){
-		rightCount = 0;
+		mRightCount = 0;
 	}
 	
-	
+	/*
+	* Calc a distance between two fingers
+	*/
 	private double distance(PointerCoords center, PointerCoords coord){
 		Float minX = Math.min(center.x, coord.x);
 		Float maxX = Math.max(center.x, coord.x);
@@ -360,26 +361,18 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		int X = (int)x1;
 
 		if (isCoords()) {
-			//if (isMoveResize())
-		//	return true;
-			   
 			// The mode of defining coords
-			float zoom = drawThreadMy.getZoom();
-//			setCoord(X - drawThreadMy.getOffsetX()*zoom, 
-//				Y - drawThreadMy.getOffsetY()*zoom,  
-//				X, drawThreadMy.getOffsetX()+ (1000*zoom)/2);
-			
+			float zoom = drawThreadMy.getZoom();	
 			setCoord(X, 
 					Y,  
 					drawThreadMy.getOffsetX()+ (1000*zoom)/2);
 			
-		 	
-//			message = ""+(X - drawThreadMy.getOffsetX())+"  "+(Y - drawThreadMy.getOffsetY());
 			message = ""+drawThreadMy.getElementOffsetXY(0)+" - "+drawThreadMy.getElementOffsetXY(1);
 			return true;
 		}
 		
 		if (seekBarSpeed.isVisible()){
+			// Seek bar processed this event
 			seekBarSpeed.onTouchEvent(event);
 			x0 = x1;
 			y0 = y1;
@@ -391,12 +384,15 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 				String VAK = ButtonsList.ACTION_DOWN(X, Y);
 				if (VAK != null){
 					if (modeIsToButton()){
+						// Add VAC to the list
 						move(VAK, false);
 						if (listener != null)
 							listener.onTouchDown(VAK);
-					}else if (choiceOfDirIsProper(VAK)){
-	    				rightCount++;
-	    				if (signal == 1){
+					}else 
+					// Check VAC
+					if (choiceOfDirIsProper(VAK)){
+	    				mRightCount++;
+	    				if (mSignal == 1){
 	    					vibrator.vibrate(50);
 	    				}
 	    			}
@@ -404,6 +400,8 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			};
         } else if (action == MotionEvent.ACTION_POINTER_DOWN){
 			if (event.getPointerCount() == 2){
+				// Store pointers positions
+				// for offset and zoom
 				PointerCoords coord0 = new PointerCoords(); // First finger coordinates
 				PointerCoords coord1 = new PointerCoords(); // Second finger coordinates
 				event.getPointerCoords(0, coord0);
@@ -427,49 +425,28 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 				event.getPointerCoords(0, coord0);
 				event.getPointerCoords(1, coord1);
 				
-				Log.d("", "= "+coord0.x+"  "+coord0.y);
-				Log.d("", "= "+coord1.x+"  "+coord1.y);
-				Log.d("", "= "+X+"  "+Y);
+				// Log.d("", "= "+coord0.x+"  "+coord0.y);
+				// Log.d("", "= "+coord1.x+"  "+coord1.y);
+				// Log.d("", "= "+X+"  "+Y);
 				
 				int pointerIndex = event.getActionIndex();
 				
-				//Toast.makeText(mContext,""+pointerIndex,);
- 
-				
-					x0 = event.getX(pointerIndex);
-					y0 = event.getY(pointerIndex);
+				x0 = event.getX(pointerIndex);
+				y0 = event.getY(pointerIndex);
 				
 				x0 = -999;
-				//if (coord0.x != uX || coord0.y == Y)
-				//	event.getPointerCoords(1, coord0);
-
-	        	//drawThreadMy.setMessage("X "+X+" Y "+Y+" coord0.x "+coord0.x+" coord0.y "+coord0.y+" coord1.x "+coord1.x+" coord1.y "+coord1.y);
-				
-				//x0 = X;
-				//y0 = Y;
 				return true;
 				
 			}
         } else if (action == MotionEvent.ACTION_MOVE) {
-        	//drawThreadMy.setMessage("X "+X+" Y "+Y);
         	if (! canPressBytton() && isMovedResized){ // 
-				if (event.getPointerCount() == 1 || mode == 999){
-					//Log.d("", "offsetY "+offsetY);
-					//Log.d("", "y1 "+y1);
-					//Log.d("", "y0 "+y0);
-					//Log.d("", "* "+X+"  "+Y);
+				if (event.getPointerCount() == 1 || mMode == 999){
+					// Offset and zoom finished
 					if (drawThreadMy != null && x0 != -999)
 						drawThreadMy.offset(x1 - x0, y1 - y0, -1);
-					
-					//Log.d("", "offsetY "+offsetY);
-					
+		
 					x0 = x1;
 					y0 = y1;
-					 
-					//mRect.set(0, 0, (int)(minWidthHeight * kZooming), (int)(minWidthHeight * kZooming));
-					//mRect.offset(offsetX, offsetY);
-					
-					//moveElements(x1 - x0, y1 - y0);
 				} else {
 					PointerCoords coord0 = new PointerCoords(); // First finger coordinates
 					PointerCoords coord1 = new PointerCoords(); // Second finger coordinates
@@ -480,40 +457,15 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 					center.x = (int) ((coord0.x+coord1.x)/2);
 					center.y = (int) ((coord0.y+coord1.y)/2);
 					
-					//double k1 = kZooming;
-					
 					if (distance != 0) // && k * distance1/distance > 0.3 && k * distance1/distance < 5
 						kZooming = distance1/distance;
 					else 
 						kZooming = -1;
 					
-					Log.d("", "kZooming  "+kZooming);
 					
-					// Replace coordinates of the current touch to the coordinatece of the center 
-
-					//offsetX = (int) (offsetX + (center1.x - x0));
-					//offsetY = (int) (offsetY + (center1.y - y0));
-					
-					//Log.d("", "center1.y - y0 "+center1.y +"   "+ y0);
-					//Log.d("", "k1 "+k1);
-					//float minWidthHeight = Math.min(Params.width, Params.height);
-					
-					//Log.d("", "kZooming "+kZooming);
-					//Log.d("", "offsetY "+offsetY);
-					
-					//offsetX = offsetX + (int)((-minWidthHeight*kZooming + minWidthHeight*k1)/2);
-					//offsetY = offsetY + (int)((-minWidthHeight*kZooming + minWidthHeight*k1)/2);
-					//Log.d("", "offsetY "+offsetY);
-					//setElements((int)(minWidthHeight * kZooming), (int)(minWidthHeight * kZooming));
-					//moveElements(offsetX, offsetY);
-
 					if (drawThreadMy != null)
 						drawThreadMy.offset(center.x - x0, center.y - y0, kZooming);
-					
-					
-					//center0.x = center1.x;
-					//center0.y = center1.y;
-					
+						
 					if (kZooming != -1)
 						distance = distance1;		
 						
@@ -585,7 +537,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         	}
         	
 			if (mPause){
-        		startMoving();
+        		restartMoving();
 				Log.d("","2");
         		return true;
         	}   
@@ -659,7 +611,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 
 	public void setSignal(String signal) {
-		this.signal = Integer.parseInt(signal);
+		mSignal = Integer.parseInt(signal);
 	}
  
 	public void resetRects() {
@@ -672,20 +624,20 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		messageType = t;
 	}
 
-	public void setGroupsCount(int p){
-		groupsCount = p;
+	public void setGroupsCount(int groupsCount){
+		mGroupsCount = groupsCount;
 	}
 	
 	public void incGroupsCount(){
-		groupsCount++;
+		mGroupsCount++;
 	}
 
-	public void setGroupCountRight(int p){
-		groupsCountRight = p;
+	public void setGroupCountRight(int groupsCountRight){
+		mGroupsCountRight = groupsCountRight;
 	}
 	
 	public void incGroupCountRight(){
-		groupsCountRight++;
+		mGroupsCountRight++;
 	}
 	public void setMaxSpeed(int i) {
 		seekBarSpeed.setMax(i);
@@ -705,7 +657,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		seekBarSpeed.addProgress(i);
 	}
 	public int getMode() {
-		return mode;
+		return mMode;
 	}
 
 	
