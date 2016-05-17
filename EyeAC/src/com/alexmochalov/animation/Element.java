@@ -2,19 +2,24 @@ package com.alexmochalov.animation;
 
 import android.graphics.*;
 
+/**
+ * 
+ * @author Alexey Mochalov
+ * Class Element is base graphical class
+ *
+ */
 public abstract class Element{
+	// Screen coordinates
 	protected float x; 
 	protected float y;
-	protected int color;
+	protected int color; // isn't used
 	
 	protected Bitmap bitmapInitial; // Initial picture
 	protected Bitmap bitmap;     // Scaled picture
 
-	protected Rect rectInitial;
-	
-	
-	//private float[] steps;
-	//private int stepNumber;
+	protected Rect rectInitial; // rectangle of the initial picture
+
+	boolean mMoved; // is eye moved
 	
 	public Element(PointF point, int color) {
 		if (point != null){
@@ -22,7 +27,6 @@ public abstract class Element{
 			this.y = point.y;
 		}
 		this.color = color;
-		
 	}
 
 	public float getOffsetX()
@@ -35,25 +39,37 @@ public abstract class Element{
 		return y;
 	}
 	
-	public float getWidth()
-	{
-		return 0;
-	}
+	public abstract float getWidth();
 	
-	public void move() {
-	}	
+	public abstract void move();
 	
+	/**
+	 * Set coordinates and size after offset and zooming.
+	 * @param dx horizontal offset 
+	 * @param dy vertical offset
+	 * @param zoom 
+	 */
 	public synchronized void commitOffset(float dx, float dy, double zoom) {
 	}	
 		
-	public void draw(Canvas canvas, boolean move, float newX, float newY, double zoom) {
+	/**
+	 * 
+	 * @param canvas is Canvas of the SurfaceView
+	 * @param offsetZoom - is the element offseted and zoomed 
+	 * @param newX - coordinate when image is offseted
+	 * @param newY - coordinate when image is offseted
+	 * @param zoom - zoom when image is offseted
+	 */
+	public abstract void draw(Canvas canvas, boolean offsetZoom, float newX, float newY, double zoom);
+
+	public void stopMoving()
+	{
+		mMoved = false;
 	}
 
-	public void stop() {
+	public void continueMoving()
+	{
+		mMoved = true;
 	}
-
-	public void cont() {
-		
-	}
-
+	
 }

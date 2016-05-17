@@ -13,38 +13,23 @@ import com.alexmochalov.eyeac.SurfaceViewScreenButtons;
 import com.alexmochalov.eyeac.SurfaceViewScreenButtons.OnEventListener;
 import com.alexmochalov.animation.SurfaceViewScreen;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ *	Class ButtonsList contains a list of the screen buttons
+ */
 public class ButtonsList {
-	private static ArrayList <ButtonVAC> buttons = new ArrayList<ButtonVAC>();
-	private static ButtonVAC buttonSelected = null;
+	private static ArrayList <ButtonVAC> buttons = new ArrayList<ButtonVAC>(); // List of the screen buttons
+	private static ButtonVAC buttonSelected = null; // Selected (highlighted) button
 
 	private static final int DELTAX = 25;
 	private static final int DELTAY = 25;
-	private static final int DELTATEXT = 5;
 	
 	public static OnEventListener listener;
 	public interface OnEventListener{
 		void onTouchDown(String VAC);
 		void onTouchUp();
 	}
-	
-	
-	/**
-	 * Set text to the buttons 
-	 * @param str is texts for the buttons: [Vr,Vc,...]
-	 */
-	/*public void setButtons(String str){
-		int i = str.indexOf(",");
-		if (i < 0) return;
-		int index = 0;
-		while (i >= 0){
-			buttons.get(index).setVAK(str.substring(0, i));
-			str = str.substring(i+1);
-			i = str.indexOf(",");
-			index++;
-		}
-		buttons.get(index).setVAK(str);
-	}
-	*/
 	
 	public String[] getVAK() { // Returns an array of the buttons titles
 		String vak[] = new String[8];
@@ -60,7 +45,6 @@ public class ButtonsList {
 		str = buttons.get(0).getVAK();
 		for (int i = 1; i < 8; i++)
 			str = str+","+buttons.get(i).getVAK();
-		
 		return str;
 	}
 	
@@ -68,30 +52,24 @@ public class ButtonsList {
 	public void setVAK(String[] array) { // Sets the buttons titles 
 		for (int i=0 ; i<array.length; i++)
 			buttons.get(i).setVAK(array[i]);
-		//invalidate();
 	}
 	
 	public void setVAKi(int i, String s) { // Sets the button title 
 		buttons.get(i).setVAK(s);
 	}
 	
-	public String marksToString() { // 
-		String rezult = "";
-		for (int i=0; i< 8; i++)
-			if (buttons.get(i).getVAK().equals(""))
-				rezult = rezult+"_";
-			else rezult = rezult+buttons.get(i).getVAK();
-		return rezult;
-	}
-
-	
 	public static void clear() {
 		buttons.clear();
 		buttonSelected = null;
 	}
 
+	/**
+	 * Creates buttons, fill list of the buttons. Sets coordinates of the buttons. 
+	 * @param width - width of the screen
+	 * @param height - height of the screen
+	 * @param allDirections - if true, create 9 buttons else 6
+	 */
 	public static void setButtonsRects(int width, int height, boolean allDirections) {
-
 		ButtonsList.clear();
 
 		int S = 50;
@@ -164,21 +142,18 @@ public class ButtonsList {
 		} 
 	}
 
+	/**
+	 * 
+	 * @param canvas
+	 * @param paint
+	 * @param surfaceViewScreenButtons
+	 * @param textTopShift
+	 */
 	public static void draw(Canvas canvas, Paint paint,
 			SurfaceViewScreenButtons surfaceViewScreenButtons, int textTopShift) {
 		
 	    for (ButtonVAC b: buttons)
 			b.draw(canvas, paint, surfaceViewScreenButtons, textTopShift);
-	}
-	
-	private boolean selectButton(float X, float Y){
-		for (int i=0; i<buttons.size(); i++)
-			if (buttons.get(i).contains(X, Y) && ! buttons.get(i).getVAK().equals("")){
-				buttonSelected = buttons.get(i);
-				buttonSelected.setPressed(true);
-				return true;
-			}
-		return false;
 	}
 	
 	public static void buttonUp(){

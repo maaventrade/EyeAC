@@ -16,7 +16,7 @@ import java.util.*;
 
 /**
  * @author Alexey Mochalov
- * SurfaceViewScreen provide creation of the visual elements, control of the Draw thread,
+ * SurfaceViewScreen provides creation of the visual elements, control of the Draw thread,
  * selection of movement directions and so.  
  *
  */
@@ -261,9 +261,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
     }
 
 	public void pause() {
-		for (Element e: elements )
-			if (e != null)
-				e.stop();
+		if (elements != null)
+			for (Element e: elements )
+				if (e != null)
+					e.stopMoving();
 		
 		mPause = true;
 	}
@@ -271,7 +272,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	public void cont() {
 		for (Element e: elements )
 			if (e != null)
-				e.cont();
+				e.continueMoving();
 		
 		mPause = false;
 	}
@@ -429,12 +430,12 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		
 		if (i == 0 && j == 0){
 			// Moving forvard
-			rightEye.movingCoords(1, 100, mPeriod, goBack, true, true);
-			leftEye.movingCoords(-1, 100, mPeriod, goBack, true, true);
+			rightEye.startMoving(1, 100, mPeriod, goBack, true, true);
+			leftEye.startMoving(-1, 100, mPeriod, goBack, true, true);
 		} else {
 			// Moving Ar,Up,Ac and so on.
-			rightEye.movingCoords(i, j, mPeriod, goBack, true, true);
-			leftEye.movingCoords(i, j, mPeriod, goBack, true, true);
+			rightEye.startMoving(i, j, mPeriod, goBack, true, true);
+			leftEye.startMoving(i, j, mPeriod, goBack, true, true);
 		}
 	}
 	
@@ -443,8 +444,8 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	*/
 	public void returnToCenter()
 	{
-		rightEye.movingCoords(9, 9, mPeriod, false, false, true);
-		leftEye.movingCoords(9, 9, mPeriod, false, false, true);
+		rightEye.startMoving(9, 9, mPeriod, false, false, true);
+		leftEye.startMoving(9, 9, mPeriod, false, false, true);
 	}
 	
 	/**
@@ -519,11 +520,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		
 		if (i == 0 && j == 0){
 			// move forward
-			rightEye.movingCoords(1, 100, mPeriod, goBack, true, false);
-			leftEye.movingCoords(-1, 100, mPeriod, goBack,  true, false);
+			rightEye.startMoving(1, 100, mPeriod, goBack, true, false);
+			leftEye.startMoving(-1, 100, mPeriod, goBack,  true, false);
 		} else {
-			rightEye.movingCoords(i, j, mPeriod, goBack, true, false);
-			leftEye.movingCoords(i, j, mPeriod, goBack, true, false);
+			rightEye.startMoving(i, j, mPeriod, goBack, true, false);
+			leftEye.startMoving(i, j, mPeriod, goBack, true, false);
 		}
 	}
 

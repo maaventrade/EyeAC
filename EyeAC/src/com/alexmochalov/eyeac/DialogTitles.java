@@ -7,6 +7,11 @@ import android.widget.*;
 import com.alexmochalov.eyeac.*;
 import java.util.*;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ * Dialog for showing the list of the titles
+ */
 public class DialogTitles extends Dialog
 {
 	private Context mContext;

@@ -18,7 +18,7 @@ import com.alexmochalov.animation.*;
 import java.util.*;
 /**
  * @author Alexey Mochalov
- * SurfaceViewScreenButtons provide 
+ * SurfaceViewScreenButtons provides 
  * 
  *
  */

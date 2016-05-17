@@ -10,6 +10,11 @@ import android.widget.*;
 
 import android.view.View.OnClickListener;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ * Dialog for showing results when the mode "Continuous moving" is selected
+ */
 public class DialogResult
 {
 	private Context context;

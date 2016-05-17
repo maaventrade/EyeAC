@@ -19,7 +19,7 @@ import android.graphics.*;
  * 
  * @author Alexey Mochalov
  * 
- * This class is Thread of animation elements and drawing on the surface
+ * Class DrawThreadMy provides a loop of animation and drawing of the elements
  *
  */
 public class DrawThreadMy extends Thread{

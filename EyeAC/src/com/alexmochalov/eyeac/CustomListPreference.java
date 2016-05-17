@@ -28,6 +28,12 @@ import android.widget.TextView;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ * CustomListPreference is ListPreference with showing images
+ * It is used for face selection
+ */
 public class CustomListPreference extends ListPreference
 {   
     CustomListPreferenceAdapter customListPreferenceAdapter = null;
@@ -52,9 +58,6 @@ public class CustomListPreference extends ListPreference
     @Override
     protected void onPrepareDialogBuilder(Builder builder)
     {
-    	//builder.setPositiveButton(null, null);
-    	//builder.setNegativeButton(null, null);
-    	
         entries = getEntries();
         entryValues = getEntryValues();
 

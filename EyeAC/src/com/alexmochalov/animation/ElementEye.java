@@ -3,109 +3,101 @@ package com.alexmochalov.animation;
 import android.graphics.*;
 import android.util.Log;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ *	Class ElementEye is image of an eye. 
+ * It provides drawing, moving and zooming of the image. 
+ *
+ */
 public class ElementEye extends Element
 {
-	//private Bitmap bitmapInitial; // Initial picture
-	//private Bitmap bitmap;     // Scaled picture
-	private Bitmap bitmapFlash;     // Scaled picture colored
-	
-	//private Rect rectInitial;
-	
+	private Bitmap bitmapFlash; //Scaled picture colored. When moving is finished image is flashing
+
+	// This coordinates are used when image is zoomed
 	private float X; 
 	private float Y; 
 
+	// Zoom coefficient
 	private float mZoom = 1;
 	
+	// Coordinates of the point to come back
+	private float xStart; 
+	private float yStart; 
+	// Coordinates of the target point
+	private float xTarget; 
+	private float yTarget; 
+
+	// Distance from start to finish
+	private float mDistanceX; 
+	private float mDistanceY; 
+	// Sizes of the step of moving
+	private float mDx;
+	private float mDy;
 	
-	private float x0; 
-	private float y0; 
-	private float x1; 
-	private float y1; 
-
-	private float deltax;
-	private float deltay;
-
 	public ElementCallback event;
-
+	// Is picture flashing
 	protected boolean mFlash;
 	
-	
-	private float radius;
-	private String name;
-	private PointF[][] coords;
+	private float mRadius; // mRadius of the eye. Used also as width and height of the bitmap
+	private PointF[][] mCoords; // Coordinates of moving (top left, left...)
 	
 	private Bitmap bitmapPupil = null;
 	private Rect rectPupil;
 
+	private boolean mMastGoBack; // True if the eye mast return to the center 
+	private boolean mIsGoBack; // True if the eye are returning to the center
 
+	private long mPeriod; // Speed of the moving (count of steps in one moving) 
+	
+	private ElementFace2 face; // Reference to the image of face
+
+	//private float shiftX = 0;
+	//private float shiftY = 0;
+	
 	interface ElementCallback { 
-		void goFinish(); 
+		void goFinish(); // Synchronize finish the eyes moving 
 	}
 
-	public void stop()
-	{
-		mMoved = false;
-	}
-
-	public void cont()
-	{
-		mMoved = true;
-	}
-
-//	private enum Dir {x, y};
-//	private Dir dir = null;
-
-	private float k;
-//	private float vel;
-	private float dx;
-	private float dy;
-
-	private boolean mMoved;
-
-	boolean mastGoBack;
-	boolean isGoBack;
-
-	private long period;
-	
-	private ElementFace2 face;
-	
-	public ElementEye(int radius, String name, String[] strings, Bitmap pupilBitmap){
+	/**
+	 * 
+	 * @param mRadius
+	 * @param name
+	 * @param strings
+	 * @param pupilBitmap
+	 */
+	public ElementEye(int mRadius, String name, String[] strings, Bitmap pupilBitmap){
 		super(null, 0);
 
-		
 		mMoved = false;
-		
-		this.name = name;
-
-		coords = new PointF[3][3];
+		//mName = name;
+		mCoords = new PointF[3][3];
 		
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
-				coords[j][i] = new PointF( Float.parseFloat(strings[i*6+j*2]), 
+				mCoords[j][i] = new PointF( Float.parseFloat(strings[i*6+j*2]), 
 						 				   Float.parseFloat(strings[i*6+j*2 + 1]));
-		x = coords[1][1].x ;
-		y = coords[1][1].y ;
+		x = mCoords[1][1].x ;
+		y = mCoords[1][1].y ;
 		
 		X = x;
 		Y = y;
 		
-		x0 = x;
-		y0 = y;
+		xStart = x;
+		yStart = y;
 		
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
 				if (i != 1 || j != 1 ){
-					coords[j][i].x = coords[j][i].x - x; 
-					coords[j][i].y = coords[j][i].y - y;
+					mCoords[j][i].x = mCoords[j][i].x - x; 
+					mCoords[j][i].y = mCoords[j][i].y - y;
 				}
 		if (pupilBitmap != null)
-			this.bitmapPupil = Bitmap.createScaledBitmap(pupilBitmap, radius,  radius, false);
-		else this.radius = radius;
-		//x0 = coords[1][1].x ;
-		//y0 = coords[1][1].y ;
+			this.bitmapPupil = Bitmap.createScaledBitmap(pupilBitmap, mRadius,  mRadius, false);
+		else this.mRadius = mRadius;
 		
-		Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-		bitmapInitial = Bitmap.createBitmap(radius * 2, (int)radius * 2, conf); // this creates a MUTABLE bitmap
+		Bitmap.Config conf = Bitmap.Config.ARGB_8888; 
+		bitmapInitial = Bitmap.createBitmap(mRadius * 2, (int)mRadius * 2, conf); // this creates a MUTABLE bitmap
 		rectInitial = new Rect(0, 0, bitmapInitial.getWidth(), bitmapInitial.getHeight());
 		Canvas canvas = new Canvas(bitmapInitial);
 
@@ -121,69 +113,63 @@ public class ElementEye extends Element
 	
 	/**
 	 * 
-	 * @param i
-	 * @param j
-	 * @param period
-	 * @param goBack
+	 * @param i - index of direction
+	 * @param j - index of direction
+	 * @param mPeriod - speed of moving
+	 * @param goBack - if true eyes must return to the center
 	 * @param flash = -1 no flash; 1 flash; 0 flash = mFlash
 	 */
-	public synchronized void movingCoords(int i, int j, long period, boolean goBack, boolean flash, boolean fFlash) {
-		Log.d("", "J "+j);
-		if (j == 9)
-			setMoving(0, 0, period, goBack, flash, fFlash);
+	public synchronized void startMoving(int i, int j, long period, boolean goBack, boolean flash, boolean fFlash) {
+		mPeriod = period;
+		
+		if (j == 9){
+			// Return to the center
+			mDistanceX = 0;
+			mDistanceY = 0;
+		}
 		else
-		if (j == 100)
-			setMoving(coords[1][1].x*i*0.01f * mZoom, 0, period, goBack, flash, fFlash);
-		else setMoving(coords[i+1][j+1].x * mZoom, coords[i+1][j+1].y * mZoom, period, goBack, flash, fFlash);
-	}
-	
-	public void setMoving(float deltax, float deltay, long period, boolean goBack, boolean flash, boolean fFlash) {
-		startMoving(x0 + deltax, y0 + deltay, period, goBack);
-		isGoBack = false;
-		//Log.d("", " isGoBack "+isGoBack);
-		//Log.d("", " flash "+flash);
+		if (j == 100){
+			// Move forward
+			mDistanceX = mCoords[1][1].x*i*0.01f * mZoom;
+			mDistanceY = 0;
+		}
+		else {
+			mDistanceX = mCoords[i+1][j+1].x * mZoom;
+			mDistanceY = mCoords[i+1][j+1].y * mZoom;
+		}
+		
+		mIsGoBack = false;
 		if (fFlash)
 			mFlash = flash;
 		else 
 			mFlash = true;
 		
+		start(xStart + mDistanceX, yStart + mDistanceY, goBack);
 	}
 	
-	
-/*
+	/**
+	* Calculates steps of moving and sets flag mMoved to true
+	*
+	* xTarget, yTarget are coordinates of the target point
+	* mPeriod is the count of steps
+	* goBack is the flag if Eye must return back to the center
+	*
+	**/
+	public void start(float xTarget_, float yTarget_, boolean goBack) {
+		mMastGoBack = goBack;
+		
+		xTarget = xTarget_;
+		yTarget = yTarget_;
 
-	public synchronized void setMoving(int i, int j, long period, boolean goBack) {
-		if (j == 100)
-			setMoving(coords[1][1].x*i*0.01f * mZoom, 0, period, goBack, mFlash);
-		else setMoving(coords[i+1][j+1].x * mZoom, coords[i+1][j+1].y * mZoom, period, goBack);
+		mDistanceX = xTarget - x;
+		mDistanceY = yTarget - y;
+
+		mDx = mDistanceX/(mPeriod); 
+		mDy = mDistanceY/(mPeriod);
+
+		mMoved = true;
+
 	}
-
-
-	public void setMoving(float deltax, float deltay, long period, boolean goBack, boolean flash) {
-		startMoving(x0 + deltax, y0 + deltay, period, goBack);
-		isGoBack = false;
-		//Log.d("", " isGoBack "+isGoBack);
-		Log.d("", " flash "+flash);
-		mFlash = flash;
-	}
-
-
-	public void setMoving(float deltax, float deltay, long period, boolean goBack) {
-		startMoving(x0 + deltax, y0 + deltay, period, goBack);
-		isGoBack = false;
-		mFlash = true;
-	}
-
-
-	*/
-	
-	
-	public PointF getCenter(){
-		return new PointF(x,y);
-	}
-	
-	private float shiftX = 0;
-	private float shiftY = 0;
 	
 	/**
 	 * Makes one step of moving
@@ -191,114 +177,85 @@ public class ElementEye extends Element
 	@Override
 	public void move() {
 		if (mMoved){ // If pause, then moving is false 
-
-			if ( Math.signum(x1 - (x + dx)) != Math.signum(deltax) || // Eye arrived to the finish  
-				Math.signum(y1 - (y + dy)) != Math.signum(deltay)){
-				event.goFinish(); // Tell about this to SurfaceView
+			if ( Math.signum(xTarget - (x + mDx)) != Math.signum(mDistanceX) || // Eye arrived to the finish  
+				Math.signum(yTarget - (y + mDy)) != Math.signum(mDistanceY)){
+				event.goFinish(); // Say about this to SurfaceView
 				return;
 			}	
-			else if ( Math.abs(x1 - (x + dx)) <= 10 && // Eye is near to finish
-					 Math.abs(y1 - (y + dy)) <= 10 && !isGoBack){
+			else if ( Math.abs(xTarget - (x + mDx)) <= 10 && // Eye is near to finish
+					 Math.abs(yTarget - (y + mDy)) <= 10 && !mIsGoBack){
 				face.setEyesArrived(true); // 
 			}	
 			else
 				face.setEyesArrived(false);
-
-			x = x + dx;
-			y = y + dy;
+			x = x + mDx;
+			y = y + mDy;
 		}
 	}
 
 	/**
 	 * Stops moving
-	 * @return False if Eye returned to the center (not obvious to move back) 
+	 * @return False if Eye returned to the center (not necessary to move back) 
 	 */
 	public boolean finishAndGoBack() {
 		mMoved = false;
-		if (mastGoBack){
-			mastGoBack = false;
-			isGoBack = true;
+		if (mMastGoBack){
+			mMastGoBack = false;
+			mIsGoBack = true;
 			// Start moving back to the center
-			startMoving(x0 , y0, period, false);
-			
+			start(xStart , yStart, false);
 			return true;
 		} else return false;
 	}
-
-	/**
-	* Calculetes parameters of moving and sets flag mMoved to true
-	*
-	* x1, y1 are cordinates of the finish point
-	* period is the count of steps
-	* goBack is the flag if Eye must return back to the center
-	*
-	**/
-	public void startMoving(float x1, float y1, long period, boolean goBack) {
-		mastGoBack = goBack;
-
-		//x1 = x - x1 * mZoom;
-		//y1 = y + y1 * mZoom;
-		
-		this.x1 = x1;
-		this.y1 = y1;
-
-		deltax = x1 - x;
-		deltay = y1 - y;
-
-		this.period = period; 
-
-		dx = deltax/(period); //* mZoom
-		dy = deltay/(period);
-
-		//steps = new float[Math.max(deltax, deltay)];
-
-		//Log.d("", "deltax "+deltax+" period "+period+" dx "+dx);
-		//Log.d("", "deltay "+deltay+" period "+period+" dy "+dy);
-
-		mMoved = true;
-
+	
+	public PointF getCenter(){
+		return new PointF(x,y);
+	}
+	
+	public void setGoBack(boolean mastGoBack) {
+		mMastGoBack = mastGoBack;
 	}
 
-	public void setGoBack(boolean goBack) {
-		mastGoBack = goBack;
-	}
-
-	public void setCoord(float x2, float y2) {
-		x = x2;
-		y = y2;
+	public void setCoord(float x_, float y_) {
+		x = x_;
+		y = y_;
 	}  
 	 
+	/**
+	 * Creates image of eye 
+	 * @param canvas - Canvas of the bitmap
+	 * @param flash - if eye is flashing
+	 */
 	private void drawToBitmap(Canvas canvas, boolean flash){
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		
 		if (bitmapPupil == null){
-			//canvas.drawColor(Color.WHITE);
 			if (flash)
 				paint.setColor(Color.GREEN);
 			else 
 				paint.setColor(Color.GRAY);
 			
 			// Draw the IRIS
-			canvas.drawCircle(radius, radius, radius, paint);
+			canvas.drawCircle(mRadius, mRadius, mRadius, paint);
 			   
 			// Draw the IRIS
 			paint.setColor(Color.BLACK);
-			canvas.drawCircle(radius, radius, radius/2, paint);
+			canvas.drawCircle(mRadius, mRadius, mRadius/2, paint);
 			
 			// Draw the border of the IRIS
-			paint.setStrokeWidth(radius/5);
+			paint.setStrokeWidth(mRadius/5);
 			paint.setStyle(Paint.Style.STROKE);  
-			canvas.drawCircle(radius, radius, radius-radius/10-1, paint);
+			canvas.drawCircle(mRadius, mRadius, mRadius-mRadius/10-1, paint);
 			
 		} else {
 			/*
 			canvas.drawBitmap(bitmapPupil, x-bitmapPupil.getWidth()/2, y-bitmapPupil.getHeight()/2, paint);
-			if (face.getEyesArrived() && (!isGoBack) && flash){
+			if (face.getEyesArrived() && (!mIsGoBack) && flash){
 				paint.setColor(Color.GREEN);
-				paint.setStrokeWidth(radius/5);
+				paint.setStrokeWidth(mRadius/5);
 				paint.setStyle(Paint.Style.STROKE);
-				canvas.drawCircle(x, y, (int)(radius*0.8), paint);
+				canvas.drawCircle(x, y, (int)(mRadius*0.8), paint);
 			}
 			*/
 		}
@@ -317,58 +274,57 @@ public class ElementEye extends Element
 			(int)(bmp.getHeight() * mZoom), false);
 		
 	}
-	
+
+	/**
+	 * Sets coordinates and create zoomed bitmap when offset and zooming finished
+	 */
 	public void commitOffset(float newX, float newY, double zoom) {
 		bitmap = Bitmap.createScaledBitmap(bitmapInitial, 
 				(int)(bitmapInitial.getWidth() * zoom), 
 				(int)(bitmapInitial.getHeight() * zoom), 
 				false);
 		
-		x = (int)(X * zoom) + newX + shiftX;
-		y = (int)(Y * zoom) + newY + shiftY;
+		x = (int)(X * zoom) + newX; // + shiftX
+		y = (int)(Y * zoom) + newY; // + shiftY
 		
-		x0 = x;
-		y0 = y;
+		xStart = x;
+		yStart = y;
 		
 		mZoom = (float)zoom;
 		fillBitmapFlash();
 
-		}	
+	}	
 	
-	/*
-	 *  
-	 * 
+	/**
+	 * Draw the eye
 	 */
-	public void draw(Canvas canvas, boolean mMoved, float newX, float newY, double zoom) {
+	@Override
+	public void draw(Canvas canvas, boolean offsetZoom, float newX, float newY, double zoom) {
 		Paint paint = new Paint();
-		if (mMoved){
+		if (offsetZoom){
+		// Drawing when user offset and zoom the image	
 			RectF rect = new RectF(0, 0,  
 					(int)(bitmapInitial.getWidth() * zoom), 
 					(int)(bitmapInitial.getHeight() * zoom));
-			
-			//x = x + newX;
-			//y = y + newY;
-			    
-			//Log.d("", "Y "+y);
-								   
-			rect.offsetTo((int)(X * zoom) + newX + shiftX, (int)(Y * zoom) + newY + shiftY);
+			rect.offsetTo((int)(X * zoom) + newX, //  + shiftX 
+ 					(int)(Y * zoom) + newY); //  + shiftY
 			canvas.drawBitmap(bitmapInitial, rectInitial, rect, paint);
 			
 		} else {
+		// Drawing in normal mode	
 			if (face != null
 				&& face.getEyesArrived() 
-				&& (!isGoBack)
+				&& (!mIsGoBack)
 				&& mFlash)
-				
 				canvas.drawBitmap(bitmapFlash, x, y, paint);
 			else
 				canvas.drawBitmap(bitmap, x, y, paint);
 		}
-		
-		
-		
-			
-		
+	}
+
+	@Override
+	public float getWidth() {
+		return 0;
 	}
 	
 }

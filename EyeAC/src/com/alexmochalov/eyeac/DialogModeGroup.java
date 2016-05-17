@@ -15,6 +15,11 @@ import android.preference.PreferenceFragment;
 import android.view.*;
 import android.view.View.*;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ * Dialog for setting parameters when the mode "Groups of movings" is selected
+ */
 public class DialogModeGroup  extends Dialog
 {
 	//PreferenceFragment context;

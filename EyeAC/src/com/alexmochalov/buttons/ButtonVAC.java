@@ -8,6 +8,11 @@ import android.graphics.RectF;
 import com.alexmochalov.eyeac.Params;
 import com.alexmochalov.animation.SurfaceViewScreen;
 
+/**
+ * 
+ * @author @Alexey Mochalov
+ * ButtonVAC is screen button
+ */
 public class ButtonVAC {
 	private RectF mRect; // Rectangle of the button
 	private String mVak; // Text of the button
