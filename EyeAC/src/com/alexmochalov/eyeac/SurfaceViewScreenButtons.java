@@ -26,8 +26,8 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
 	
 	// For moving and zooming of the face picture
-	private static final String PREFS_OFFSETX = "PREFS_OFFSETX";
-	private static final String PREFS_OFFSETY = "PREFS_OFFSETY";
+	private static final String PREFS_shiftX = "PREFS_shiftX";
+	private static final String PREFS_shiftY = "PREFS_shiftY";
 	private static final String PREFS_ZOOM = "PREFS_ZOOM";
 	 
 	private Context mContext;
@@ -53,7 +53,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	private int mFaceNumber;
 	private int mMode;
 	
-	// Position of the previous touch (for zoom and offset mode)
+	// Position of the previous touch (for zoom and shift mode)
 	private float x0;
 	private float y0;
 	private double distance = 0; // Distance between fingers 
@@ -141,25 +141,25 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         	
         	if (mMode == 999)
 				// In the mode "Coordinates" no zooming
-        		drawThreadMy.offset(
-        				mPrefs.getFloat(PREFS_OFFSETX, 0), 
-        				mPrefs.getFloat(PREFS_OFFSETY, 0), 
+        		drawThreadMy.shift(
+        				mPrefs.getFloat(PREFS_shiftX, 0), 
+        				mPrefs.getFloat(PREFS_shiftY, 0), 
         				1);
         	else
-        		drawThreadMy.offset(
-        				mPrefs.getFloat(PREFS_OFFSETX, 0), 
-        				mPrefs.getFloat(PREFS_OFFSETY, 0), 
+        		drawThreadMy.shift(
+        				mPrefs.getFloat(PREFS_shiftX, 0), 
+        				mPrefs.getFloat(PREFS_shiftY, 0), 
         				mPrefs.getFloat(PREFS_ZOOM, 1));
         	
-    		//drawThreadMy.offset(0,0,1);
+    		//drawThreadMy.shift(0,0,1);
     		// <item>Get eyes coordinates (for designer)</item>
-    		drawThreadMy.commitOffset();
+    		drawThreadMy.commitShift();
         	
     	}
 	}
 	
-	public void setOffset(){
-		drawThreadMy.setOffset(isMovedResized);
+	public void setShift(){
+		drawThreadMy.setshift(isMovedResized);
 	}
 	
     @Override
@@ -169,8 +169,8 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
     	if (drawThreadMy != null){
 			// Save parameters the image
 			Editor editor = mPrefs.edit();
-			editor.putFloat(PREFS_OFFSETX, drawThreadMy.getOffsetX());
-			editor.putFloat(PREFS_OFFSETY, drawThreadMy.getOffsetY());
+			editor.putFloat(PREFS_shiftX, drawThreadMy.getShiftX());
+			editor.putFloat(PREFS_shiftY, drawThreadMy.getShiftY());
 			editor.putFloat(PREFS_ZOOM, drawThreadMy.getZoom());
 			editor.apply();
 		
@@ -227,8 +227,8 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 					R.array.Dir3R, R.array.Dir3L);
 			
 		// Get prefetences
-		float offsetX = mPrefs.getFloat(PREFS_OFFSETX, 0); 
-		float offsetY = mPrefs.getFloat(PREFS_OFFSETY, 0); 
+		float shiftX = mPrefs.getFloat(PREFS_shiftX, 0); 
+		float shiftY = mPrefs.getFloat(PREFS_shiftY, 0); 
 		float zoom = mPrefs.getFloat(PREFS_ZOOM, -1);
 
 		if (zoom == -1){
@@ -236,24 +236,24 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			Editor editor = mPrefs.edit();
 			zoom = Math.min(width, height)/getFaceWidth();
 			if (width < height){
-				offsetY = (height - (getFaceWidth()*zoom))/2;
-				offsetX = 0;
+				shiftY = (height - (getFaceWidth()*zoom))/2;
+				shiftX = 0;
 			}	
 			else if (width > height){
-				offsetX = (width - (getFaceWidth()*zoom))/2;
-				offsetY = 0;
+				shiftX = (width - (getFaceWidth()*zoom))/2;
+				shiftY = 0;
 			}	
 						
-			editor.putFloat(PREFS_OFFSETX, offsetX);
-			editor.putFloat(PREFS_OFFSETY, offsetY);
+			editor.putFloat(PREFS_shiftX, shiftX);
+			editor.putFloat(PREFS_shiftY, shiftY);
 			editor.putFloat(PREFS_ZOOM, zoom);
 			editor.apply();
 		}
 		// Reset image coordinates if image is out of screen bounds
-		if (offsetX + 1024 * zoom < 0 || offsetY + 1024 * zoom < 0 || offsetX > width-50 || offsetY > height - 50 ){
+		if (shiftX + 1024 * zoom < 0 || shiftY + 1024 * zoom < 0 || shiftX > width-50 || shiftY > height - 50 ){
 			Editor editor = mPrefs.edit();
-			editor.putFloat(PREFS_OFFSETX, 0);
-			editor.putFloat(PREFS_OFFSETY, 0);
+			editor.putFloat(PREFS_shiftX, 0);
+			editor.putFloat(PREFS_shiftY, 0);
 			editor.putFloat(PREFS_ZOOM, 1);
 			editor.apply();
 		}
@@ -301,7 +301,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			int i = (getWidth()-bounds.width())/2;
 			int j = bounds.height();
 			
-			//bounds.offset(i, getHeight()-(j*2));
+			//bounds.shift(i, getHeight()-(j*2));
 			
 			bounds.left = bounds.left+i-10; 
 			bounds.right = bounds.right+i+7; 
@@ -365,9 +365,9 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			float zoom = drawThreadMy.getZoom();	
 			setCoord(X, 
 					Y,  
-					drawThreadMy.getOffsetX()+ (1000*zoom)/2);
+					drawThreadMy.getShiftX()+ (1000*zoom)/2);
 			
-			message = ""+drawThreadMy.getElementOffsetXY(0)+" - "+drawThreadMy.getElementOffsetXY(1);
+			message = ""+drawThreadMy.getElementshiftXY(0)+" - "+drawThreadMy.getElementshiftXY(1);
 			return true;
 		}
 		
@@ -401,7 +401,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         } else if (action == MotionEvent.ACTION_POINTER_DOWN){
 			if (event.getPointerCount() == 2){
 				// Store pointers positions
-				// for offset and zoom
+				// for shift and zoom
 				PointerCoords coord0 = new PointerCoords(); // First finger coordinates
 				PointerCoords coord1 = new PointerCoords(); // Second finger coordinates
 				event.getPointerCoords(0, coord0);
@@ -441,9 +441,9 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         } else if (action == MotionEvent.ACTION_MOVE) {
         	if (! canPressBytton() && isMovedResized){ // 
 				if (event.getPointerCount() == 1 || mMode == 999){
-					// Offset and zoom finished
+					// shift and zoom finished
 					if (drawThreadMy != null && x0 != -999)
-						drawThreadMy.offset(x1 - x0, y1 - y0, -1);
+						drawThreadMy.shift(x1 - x0, y1 - y0, -1);
 		
 					x0 = x1;
 					y0 = y1;
@@ -464,7 +464,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 					
 					
 					if (drawThreadMy != null)
-						drawThreadMy.offset(center.x - x0, center.y - y0, kZooming);
+						drawThreadMy.shift(center.x - x0, center.y - y0, kZooming);
 						
 					if (kZooming != -1)
 						distance = distance1;		

@@ -12,13 +12,18 @@ import android.view.MotionEvent;
 
 import com.alexmochalov.eyeac.DialogInfo.MyCallbackBv;
 import com.alexmochalov.animation.*;
-
+/**
+ * 
+ * @author @Alexey Mochalov
+ *	Class SeekBarSpeed is a visual control
+ * for a setting moving speed
+ *
+ */
 public class SeekBarSpeed{
 	private boolean mVisible = false;
 	
 	private int mWidth;
 	private int mHeight;
-	private Path path;
 	private RectF rect;
 	
 	private int mMax = 0;
@@ -104,14 +109,6 @@ public class SeekBarSpeed{
 		mWidth = width;
 		mHeight = height;
 		
-		path = new Path();
-		
-		path.moveTo(mWidth - LeftDelta, 0      + DHeight);
-		
-		path.lineTo(mWidth - 5 , 0      + DHeight);
-		path.lineTo(mWidth - 5 , height - DHeight);
-		path.lineTo(mWidth - LeftDelta, 0      + DHeight);
-		
 		rect = new RectF(mWidth - LeftDelta, 0, mWidth, mHeight);
 	}
 
@@ -157,7 +154,7 @@ public class SeekBarSpeed{
 		mProgress = Math.max(
 			Math.min(mProgress, mMax), 1);
 			
-		Log.d("","mProgress "+mProgress);
+		//Log.d("","mProgress "+mProgress);
 		if (callback != null)
 			callback.progressChanged(mProgress);
 	}

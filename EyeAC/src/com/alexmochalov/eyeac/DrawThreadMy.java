@@ -33,8 +33,8 @@ public class DrawThreadMy extends Thread{
 	
 	private SurfaceViewScreenButtons surfaceViewScreenButtons; // 
 	
-	private float offsetX = 0;
-	private float offsetY = 0;
+	private float shiftX = 0;
+	private float shiftY = 0;
 	private double mZoom = 1;
 
 	private String message = "";
@@ -52,20 +52,20 @@ public float getZoom()
 	return (float)mZoom;
 }
 
-public float getOffsetY()
+public float getShiftY()
 {
-return offsetY;
+return shiftY;
 }
 
-public float getOffsetX()
+public float getShiftX()
 {
-return offsetX;
+return shiftX;
 }
 
-public String getElementOffsetXY(int i)
+public String getElementshiftXY(int i)
 {
-	return ""+ (elements.get(i).getOffsetX() - getOffsetX())+" "+
-			   (elements.get(i).getOffsetY() - getOffsetY());
+	return ""+ (elements.get(i).getShiftX() - getShiftX())+" "+
+			   (elements.get(i).getShiftY() - getShiftY());
 }
 
 	public void setRunning(boolean run) {
@@ -114,45 +114,44 @@ public String getElementOffsetXY(int i)
 		message = pMessage;
 	}
 	
-	public void setOffset(Boolean offset){
-		if (mMoving && !offset)
+	public void setshift(Boolean shift){
+		if (mMoving && !shift)
     		for (Element b: elements)
-    			b.commitOffset(offsetX, offsetY, mZoom);
+    			b.commitShift(shiftX, shiftY, mZoom);
 			
-		mMoving = offset;
+		mMoving = shift;
 	}
 	
-	public void commitOffset(){
+	public void commitShift(){
     	for (Element b: elements)
-    		b.commitOffset(offsetX, offsetY, mZoom);
+    		b.commitShift(shiftX, shiftY, mZoom);
 	}
 	
-	
+	/**
+	* Draw all visual elements
+	**/
     private synchronized void draw(Canvas canvas)
     {
 	    // Fill Canvas with background color
     	canvas.drawColor(Params.colorSurfaceBg);
 
+		// Draw elements of the face
     	for (Element b: elements)
-    		b.draw(canvas, mMoving, offsetX, offsetY, mZoom);
-    	//for (int i = elements.size()-1; i>=0; i--)
-    	//	elements.get(i).draw(canvas, mMoving, offsetX, offsetY, mZoom);
-    
-			
+    		b.draw(canvas, mMoving, shiftX, shiftY, mZoom);
+    	
+		// Draw screen buttons, scroll bar and so.	
 		surfaceViewScreenButtons.draw(canvas, paint);
-		
-    	// Draw message
-		//surfaceViewScreenButtons.draw(canvas);
 		
 		paint = new Paint();
 		paint.setColor(Color.BLACK);
 		paint.setTextSize(32);
 		
-		/*canvas.drawLine(getOffsetX()+
+		// Debugging
+		/*canvas.drawLine(getshiftX()+
 						(1000*
 						getZoom())/2,
 						0,
-						getOffsetX()+
+						getshiftX()+
 						(1000*
 						getZoom())/2,
 						1000,
@@ -172,10 +171,10 @@ public String getElementOffsetXY(int i)
 		}*/
     }
 
-	public void offset(float dx, float dy, double k) {
-		Log.d("", "offsetY "+offsetY+"  "+dx);
-		offsetX = offsetX + dx;
-		offsetY = offsetY + dy;
+	public void shift(float dx, float dy, double k) {
+		//Log.d("", "shiftY "+shiftY+"  "+dx);
+		shiftX = shiftX + dx;
+		shiftY = shiftY + dy;
 		if (k > 0 )
 		{	
 			mZoom = mZoom * k;

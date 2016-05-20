@@ -278,7 +278,7 @@ public class ElementEye extends Element
 	/**
 	 * Sets coordinates and create zoomed bitmap when offset and zooming finished
 	 */
-	public void commitOffset(float newX, float newY, double zoom) {
+	public void commitShift(float newX, float newY, double zoom) {
 		bitmap = Bitmap.createScaledBitmap(bitmapInitial, 
 				(int)(bitmapInitial.getWidth() * zoom), 
 				(int)(bitmapInitial.getHeight() * zoom), 

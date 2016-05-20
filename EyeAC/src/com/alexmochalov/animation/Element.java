@@ -29,12 +29,12 @@ public abstract class Element{
 		this.color = color;
 	}
 
-	public float getOffsetX()
+	public float getShiftX()
 	{
 		return x;
 	}
 	
-	public float getOffsetY()
+	public float getShiftY()
 	{
 		return y;
 	}
@@ -44,12 +44,12 @@ public abstract class Element{
 	public abstract void move();
 	
 	/**
-	 * Set coordinates and size after offset and zooming.
+	 * Set coordinates and size after shifting and zooming.
 	 * @param dx horizontal offset 
 	 * @param dy vertical offset
 	 * @param zoom 
 	 */
-	public synchronized void commitOffset(float dx, float dy, double zoom) {
+	public synchronized void commitShift(float dx, float dy, double zoom) {
 	}	
 		
 	/**

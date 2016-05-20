@@ -10,10 +10,16 @@ import com.alexmochalov.eyeac.SurfaceViewScreenButtons.OnEventListener;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.*;
-
+/**
+ * 
+ * @author @Alexey Mochalov
+ *	Class Titles is an array list of Titles.
+ * It ptovides creation, loading and saving the Titles
+ *
+ */
 public class Titles extends ArrayList{
-	private boolean mRecordOn = false;
-	private long timeStart;
+	private boolean mRecordOn = false; // True if recording of the titles is running
+	private long timeStart; // Time of the Title starting 
 
 	private int mIndex;
 	

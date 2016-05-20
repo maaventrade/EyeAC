@@ -199,7 +199,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		case R.id.action_move:
 			// Start move and resize
 			surface.setMoveResize();
-			surface.setOffset();
+			surface.setShift();
 			item.setChecked(!item.isChecked());
 			return true;
 		case R.id.action_settings:
