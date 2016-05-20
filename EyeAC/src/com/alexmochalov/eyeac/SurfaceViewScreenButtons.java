@@ -193,6 +193,13 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		mFaceNumber = faceNumber;
 	}
 	
+    public void setFaceNumberAndReset(int faceNumber)
+	{
+		mFaceNumber = faceNumber;
+		clearElements();
+		setElements(Params.width, Params.height);
+	}
+	
     public void setMode(int mode)
 	{ 
 		mMode = mode;
@@ -213,18 +220,37 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		setSeekBarSpeedRect(width, height);
   
 		setParams();
+		setElements(width, height);
 		
+    	createDrawThread1();
+    	
+		ButtonsList.listener = new ButtonsList.OnEventListener() {
+			@Override
+			public void onTouchDown(String VAC) {
+				if (listener != null)
+					listener.onTouchDown(VAC);
+			}
+
+			@Override
+			public void onTouchUp() {
+				if (listener != null)
+					listener.onTouchUp();
+			}
+		};
+	} 
+  	
+	private void setElements(int width, int height) {
 		//Log.d("","Face number "+mFaceNumber);
 		if (mFaceNumber == 0)
-			addFaceElements2(width, height, 65, R.drawable.face0, null, R.array.Dir0R, R.array.Dir0L);
+			addFaceElements2(width, height, 65, R.drawable.face01, null, R.array.Dir0R, R.array.Dir0L);
 		else if (mFaceNumber == 1)
-			addFaceElements2(width, height, 38, R.drawable.face21, null, R.array.Dir2R, R.array.Dir2L);
+			addFaceElements2(width, height, 38, R.drawable.face11, null, R.array.Dir2R, R.array.Dir2L);
 		else if (mFaceNumber == 2)
-			addFaceElements2(width, height, 82, R.drawable.face32, null, R.array.Dir2R, R.array.Dir2L);
-		else if (mFaceNumber == 21)
-			addFaceElements2(width, height, 82, R.drawable.face3, 
-					BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
-					R.array.Dir3R, R.array.Dir3L);
+			addFaceElements2(width, height, 38, R.drawable.face21, null, R.array.Dir3R, R.array.Dir3L);
+		//else if (mFaceNumber == 21)
+		//	addFaceElements2(width, height, 82, R.drawable.face3, 
+		//			BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
+		//			R.array.Dir3R, R.array.Dir3L);
 			
 		// Get prefetences
 		float shiftX = mPrefs.getFloat(PREFS_shiftX, 0); 
@@ -257,24 +283,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 			editor.putFloat(PREFS_ZOOM, 1);
 			editor.apply();
 		}
-		
-    	createDrawThread1();
-    	
-		ButtonsList.listener = new ButtonsList.OnEventListener() {
-			@Override
-			public void onTouchDown(String VAC) {
-				if (listener != null)
-					listener.onTouchDown(VAC);
-			}
-
-			@Override
-			public void onTouchUp() {
-				if (listener != null)
-					listener.onTouchUp();
-			}
-		};
-	} 
-  	
+	}
 	/*
 	* This method is called from the fraw thread
 	*/
@@ -337,7 +346,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 	
 	/*
-	* Calc a distance between two fingers
+	* Calculates a distance between two fingers
 	*/
 	private double distance(PointerCoords center, PointerCoords coord){
 		Float minX = Math.min(center.x, coord.x);
@@ -361,7 +370,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		int X = (int)x1;
 
 		if (isCoords()) {
-			// The mode of defining coords
+			// The mode of defining coordinates
 			float zoom = drawThreadMy.getZoom();	
 			setCoord(X, 
 					Y,  

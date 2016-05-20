@@ -31,13 +31,15 @@
 		<item>@string/mode_info_random</item>
 		<item>@string/mode_info_groups</item>
 		<item>@string/mode_info_tobuttom</item>
-		
+		<item>@string/mode_info_coordinates</item>
+				
 	</string-array>
 
 
 	<string-array name="FaceNumber">
 		<item>0</item>
 		<item>1</item>
+		<item>2</item>
 	</string-array>
 	
 <string-array name="Dir0R">
@@ -138,45 +140,49 @@
 </string-array>
     
 <string-array name="Dir3R">
-<item>-0.22281167</item>
-<item>0.18037136</item>
-<item>-0.14854111</item>
-<item>0.1750663</item>
-   <item>-0.074270554</item>
-   <item>0.18037136</item>
-<item>-0.23342176</item>
-<item>0.2281167</item>
-<item>-0.13793103</item>
-<item>0.2387268</item>
-<item>-0.0530504</item>
-<item>0.2387268</item>
-<item>-0.22281167</item>
-<item>0.28116712</item>
-<item>-0.12732096</item>
-<item>0.30769232</item>
-<item>-0.06896552</item>
-<item>0.265252</item>
+<item>302</item>
+<item>366</item>
+<item>326</item>
+<item>363</item>
+<item>363</item>
+<item>371</item>
+<item>290</item>
+<item>384</item>
+<item>320</item>
+<item>377</item>
+<item>356</item>
+<item>387</item>
+<item>297</item>
+<item>396</item>
+<item>321</item>
+<item>391</item>
+<item>344</item>
+<item>383</item>
+
 </string-array>
 		
 <string-array name="Dir3L">
-	<item>0.46684352</item>
-	<item>0.16445623</item>
-	<item>0.5464191</item>
-	<item>0.13793103</item>
-		<item>0.63129973</item>
-		<item>0.12732096</item>
-	<item>0.4509284</item>
-	<item>0.21750663</item>
-	<item>0.57824934</item>
-	<item>0.19628647</item>
-	<item>0.65782493</item>
-	<item>0.1856764</item>
-	<item>0.48806366</item>
-	<item>0.25994694</item>
-	<item>0.58885944</item>
-	<item>0.25994694</item>
-	<item>0.63129973</item>
-	<item>0.21750663</item>
+<item>553</item>
+<item>371</item>
+<item>571</item>
+<item>366</item>
+<item>596</item>
+<item>373</item>
+<item>549</item>
+<item>386</item>
+<item>571</item>
+<item>380</item>
+<item>590</item>
+<item>387</item>
+<item>544</item>
+<item>399</item>
+<item>571</item>
+<item>393</item>
+<item>588</item>
+<item>390</item>
+
+
+
 </string-array>
 		
 

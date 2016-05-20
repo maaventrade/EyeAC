@@ -140,6 +140,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 		return mMode == Mode.group;
 	}
 	
+	public void clearElements()
+	{
+		elements.clear();
+	}
+	
 	public boolean isGroupAny()
 	{
 		return mMode == Mode.group ||  mMode == Mode.groupWait || mMode == Mode.groopBetween;
@@ -231,11 +236,11 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
     	elements.add(leftEye);
 		
     	face = new ElementFace2(mContext, Color.BLACK, faceID);
+    	elements.add(face);
     	
 		rightEye.setFace(face);
 		leftEye.setFace(face);
 
-    	elements.add(face);
 	}
 	
 	@Override

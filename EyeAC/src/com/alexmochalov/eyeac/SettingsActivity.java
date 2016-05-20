@@ -204,6 +204,7 @@ public class SettingsActivity extends PreferenceActivity
 			
 			*/
 			
+			// Values are in the Values\array.xml <string-array name="FaceNumber">
 			pref = findPreference("face_number");
 			int face_number = prefs.getInt("FACE_NUMBER", 0);
 			setIcon(pref, face_number);
@@ -227,13 +228,13 @@ public class SettingsActivity extends PreferenceActivity
 			
             switch (face_number){
             case 0:
-                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face10);
+                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face02);
             	break;
             case 1:
-                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face20);
+                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face12);
             	break;
             default:
-                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face10);
+                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face02);
             	break;
             }
 			

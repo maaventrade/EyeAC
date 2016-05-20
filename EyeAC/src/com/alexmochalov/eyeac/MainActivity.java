@@ -14,6 +14,8 @@ import android.widget.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Timer;
@@ -91,6 +93,22 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		actionBarHeight = getActionBarHeight();
 		// If there is not found APP_FOLDER, create it
 		checkDirectory();
+		
+		
+		// Select mode of the application  
+		String[] modes = getResources().getStringArray(R.array.FaceNumber);
+		CustomArrayAdapter myListAdapter = new CustomArrayAdapter(this, 0, modes);
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle(getResources().getString(R.string.face_number))
+			.setAdapter(myListAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int position) {
+                    		surface.setFaceNumberAndReset(position);
+                        	dialog.dismiss();
+                        }
+                    });
+		builder.show();			
 		
 	}
 	
@@ -389,9 +407,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		setMode(mode);	
 
 		int face_number = prefs.getInt(FACE_NUMBER, 0);
-		if (!Params.designMode)
-			face_number = Math.min(face_number, 1);
-		surface.setFaceNumber( face_number);
+		surface.setFaceNumber(face_number);
 		surface.setMode(mode);
 		surface.setPrefs(prefs);
 		

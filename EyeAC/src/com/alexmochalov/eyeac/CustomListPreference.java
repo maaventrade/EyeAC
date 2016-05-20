@@ -128,16 +128,19 @@ public class CustomListPreference extends ListPreference
                 
                 image = (ImageView)row.findViewById(R.id.custom_list_view_row_image_view);
                 Bitmap bmp = null;
-                
+                // Get bitmap from Resource
                 switch (position){
                 case 0:
-                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face10);
+                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face02);
                 	break;
                 case 1:
-                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face20);
+                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face12);
+                	break;
+                case 2:
+                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face22);
                 	break;
                 default:
-                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face10);
+                    bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.face02);
                 	break;
                 }
                 
