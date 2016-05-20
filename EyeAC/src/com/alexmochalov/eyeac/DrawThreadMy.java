@@ -1,6 +1,5 @@
 package com.alexmochalov.eyeac;
 
-
 import java.util.ArrayList;
 
 import com.alexmochalov.animation.Element;

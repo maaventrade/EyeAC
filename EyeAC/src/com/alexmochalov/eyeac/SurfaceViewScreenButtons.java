@@ -1,5 +1,5 @@
 package com.alexmochalov.eyeac;
-
+ 
 import android.content.*;
 import android.content.SharedPreferences.*;
 import android.graphics.*;
