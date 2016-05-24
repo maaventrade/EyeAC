@@ -2,6 +2,7 @@ package com.alexmochalov.eyeac;
  
 import android.content.*;
 import android.content.SharedPreferences.*;
+import android.content.res.Resources;
 import android.graphics.*;
 import android.os.*;
 import android.preference.PreferenceManager;
@@ -23,6 +24,7 @@ import java.util.*;
  *
  */
 public class SurfaceViewScreenButtons extends SurfaceViewScreen {
+	Resources resources;
 	Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
 	
 	// For moving and zooming of the face picture
@@ -30,7 +32,7 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	private static final String PREFS_shiftY = "PREFS_shiftY";
 	private static final String PREFS_ZOOM = "PREFS_ZOOM";
 	 
-	private Context mContext;
+	//private Context mContext;
 	
 	private DrawThreadMy drawThreadMy;
 	  
@@ -62,7 +64,6 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 
 	private SharedPreferences mPrefs;
 	
-
 	public void setTextTopShift(int shift)
 	{
 		textTopShift = shift;
@@ -89,42 +90,38 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	}
 	
 	/*
-	* Creates a text strig from the results data
+	* Creates a text string from the results data
 	*/
 	public String getResultStr()
 	{
 		if (this.isRandom()){
 			int count = getCount();
 			if (count == 0)
-				return mContext.getResources().getString(R.string.noresult);
-			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
+				return resources.getString(R.string.noresult);
+			else return (resources.getString(R.string.resultstr)+" <b>"+
 					(int)((float)mRightCount/count*100f)+"</b>% ("+mRightCount+"/"+count+")");
 			
 		} else
 		if (this.isGroupAny()){
 			if (mGroupsCount == 0)
-				return mContext.getResources().getString(R.string.noresult);
-			else return ( mContext.getResources().getString(R.string.resultstr)+" <b>"+
+				return resources.getString(R.string.noresult);
+			else return ( resources.getString(R.string.resultstr)+" <b>"+
 					(int)((float)mGroupsCountRight/mGroupsCount*100f)+"</b>% ("+mGroupsCountRight+"/"+mGroupsCount+")");
 		} else 
 			return "Select mode Continious or Sets of movements";
-		
-			
 	}
 	
 	public SurfaceViewScreenButtons(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mContext = context;
+		vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+		resources = context.getResources();
 	}
 
 	public SurfaceViewScreenButtons(Context context) {
         super(context);
+		vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+		resources = context.getResources();
     }
-	
-	
-	public void setParams() {
-		vibrator = (Vibrator)mContext.getSystemService(Context.VIBRATOR_SERVICE);
-	}
 	
 	public void setSeekBarSpeedRect(int width, int height){
 		seekBarSpeed.setSize(width, height);
@@ -185,6 +182,9 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
             }
             drawThreadMy = null;
     	}
+    	
+    	listener = null;
+    	ButtonsList.clearAll();
 		super.surfaceDestroyed(holder);
     }
 	
@@ -193,11 +193,15 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		mFaceNumber = faceNumber;
 	}
 	
-    public void setFaceNumberAndReset(int faceNumber)
+    public void setFaceNumberAndReset(SharedPreferences prefs, int faceNumber, String FACE_NUMBER)
 	{
 		mFaceNumber = faceNumber;
 		clearElements();
 		setElements(Params.width, Params.height);
+		
+		Editor editor = prefs.edit();
+		editor.putInt(FACE_NUMBER, faceNumber);
+		editor.apply();
 	}
 	
     public void setMode(int mode)
@@ -219,7 +223,6 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 		ButtonsList.setButtonsRects(width, height, allDirections());
 		setSeekBarSpeedRect(width, height);
   
-		setParams();
 		setElements(width, height);
 		
     	createDrawThread1();
@@ -242,11 +245,11 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
 	private void setElements(int width, int height) {
 		//Log.d("","Face number "+mFaceNumber);
 		if (mFaceNumber == 0)
-			addFaceElements2(width, height, 65, R.drawable.face01, null, R.array.Dir0R, R.array.Dir0L);
+			addFaceElements2(resources, width, height, 65, R.drawable.face01, null, R.array.Dir0R, R.array.Dir0L);
 		else if (mFaceNumber == 1)
-			addFaceElements2(width, height, 38, R.drawable.face11, null, R.array.Dir2R, R.array.Dir2L);
+			addFaceElements2(resources, width, height, 38, R.drawable.face11, null, R.array.Dir2R, R.array.Dir2L);
 		else if (mFaceNumber == 2)
-			addFaceElements2(width, height, 38, R.drawable.face21, null, R.array.Dir3R, R.array.Dir3L);
+			addFaceElements2(resources, width, height, 38, R.drawable.face21, null, R.array.Dir3R, R.array.Dir3L);
 		//else if (mFaceNumber == 21)
 		//	addFaceElements2(width, height, 82, R.drawable.face3, 
 		//			BitmapFactory.decodeResource(mContext.getResources(), R.drawable.pupil31),
@@ -547,14 +550,12 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         	
 			if (mPause){
         		restartMoving();
-				Log.d("","2");
         		return true;
         	}   
 			
         	if (ButtonsList.ACTION_UP()){
 	        	invalidate();
         	} else {
-				Log.d("","4");
 				pause();
 				return true;
 			}
@@ -566,33 +567,6 @@ public class SurfaceViewScreenButtons extends SurfaceViewScreen {
         
 		return true; // false?
 	}
-	/*
-	
-	public void startRandomMoving() {
-		//setPeriod(period);
-		super.startRandomMoving();
-	}
-	*/
-	public void setMarkType(int markType) {
-    	/*if (markType == 1){
-    		rects[4].top = rectsSaved[0].top - (height - rectsSaved[0].top); 
-    		rects[6].top = rectsSaved[1].top - (height - rectsSaved[1].top);
-    	} else {
-    		rects[4] = new RectF(rectsSaved[0]);
-    		rects[6] = new RectF(rectsSaved[1]);
-    	}
-		*/
-		this.invalidate();
-	}
-	
-	//public int getCurrentPosition(){
-	//	return drawThreadMy.getCurrentPosition();
-	//}
-	
-	//public int getDuration(){
-	//	return drawThreadMy.getCurrentPosition();
-	//}
-	
 
 	public void pause() {
 		super.pause();

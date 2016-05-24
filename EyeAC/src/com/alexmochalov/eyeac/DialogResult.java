@@ -17,21 +17,21 @@ import android.view.View.OnClickListener;
  */
 public class DialogResult
 {
-	private Context context;
+	private Context mContext;
 	private SurfaceViewScreenButtons surfaceViewScreenButtons;
 	
 	public DialogResult(Context context, SurfaceViewScreenButtons surfaceViewScreenButtons){
 		super();
-		this.context = context;
+		this.mContext = context;
 		this.surfaceViewScreenButtons = surfaceViewScreenButtons;
 	}	
 
 	public void execute(){
-		final Dialog dialog = new Dialog(context, 
+		final Dialog dialog = new Dialog(mContext, 
 			R.style.DialogSlideAnim);
 			
 	 	dialog.setContentView(R.layout.dialog_result);
-		dialog.setTitle(context.getResources().getString(R.string.results));
+		dialog.setTitle(mContext.getResources().getString(R.string.results));
 
 		TextView dialogresultTextView1 = (TextView)dialog.findViewById(R.id.dialogresultTextView1);
         dialogresultTextView1.setText(

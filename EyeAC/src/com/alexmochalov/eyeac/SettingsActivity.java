@@ -28,7 +28,6 @@ import com.alexmochalov.eyeac.R.xml;
 public class SettingsActivity extends PreferenceActivity
 {
 	private SharedPreferences prefs;
-	private Context context;
 	
 	public SettingsActivity(){
 	}
@@ -45,23 +44,6 @@ public class SettingsActivity extends PreferenceActivity
         	.replace(android.R.id.content, new PreferencesFragment()).commit();
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		context = this;
-	}
-
-	private void setSummary(Preference pref, String val, int res, int resData){
-		String[] alias = getResources().getStringArray(res); 
-		String[] data = getResources().getStringArray(resData);
-		
-		ListPreference p  = (ListPreference)pref;
-		
-		for (int j=0 ; j < alias.length ; j++) { 
-			if (data[j].equals(val)) { 
-				pref.setSummary(alias[j]);
-				p.setValueIndex(j);
-				return; 
-			} 
-		} 
 	}
 
 	public class PreferencesFragment
@@ -223,15 +205,22 @@ public class SettingsActivity extends PreferenceActivity
 			
 		}
 		
+		/**
+		 * 
+		 * @param pref is SharedPreferences
+		 * @param face_number - number of selected face picture
+		 */
 		private void setIcon(Preference pref, int face_number){
 			Drawable d = null;
-			
             switch (face_number){
             case 0:
                 d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face02);
             	break;
             case 1:
                 d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face12);
+            	break;
+            case 2:
+                d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face22);
             	break;
             default:
                 d = ContextCompat.getDrawable(getApplicationContext(), R.drawable.face02);

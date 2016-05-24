@@ -184,6 +184,10 @@ public class ButtonsList {
     	}
 		return false;
 	}
+
+	public static void clearAll() {
+		listener = null;
+	}
 	
 	
 

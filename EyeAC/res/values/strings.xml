@@ -68,7 +68,7 @@ The <b>volume control</b> sets the speed of the movement.
 	<!-- string name="mode_info_random">Mode: Continuous motion. The eyes are moving randomly. Press the screen buttons in the moving direction while the eyes are moving. The percent of correct actions is showed in the menu Results.</string>
 	<string name="mode_info_groups">Mode: Groups. The eyes are moving randomly and stops. Press the screen buttons in the moving directions when the moving of the eyes paused. The percent of correct actions is showed in the menu Results.</string> -->
 		
-	<string name="face_number">Face picture</string>
+	<string name="face_number">Select face picture</string>
 		
 		
 </resources>

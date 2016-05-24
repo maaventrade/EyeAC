@@ -2,6 +2,7 @@ package com.alexmochalov.animation;
 
 import android.app.*;
 import android.content.*;
+import android.content.res.Resources;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
@@ -10,7 +11,6 @@ import android.view.*;
 import android.widget.*;
 
 import com.alexmochalov.animation.ElementEye.*;
-
 
 import java.util.*;
 
@@ -21,8 +21,6 @@ import java.util.*;
  *
  */
 public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Callback, ElementCallback{
-	private Context mContext;
-	
 	// List of the elements of the face
 	private ArrayList <Element> elements;
 	// And references to every element
@@ -199,12 +197,10 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	
     public SurfaceViewScreen(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mContext = context;
 		getHolder().addCallback(this);
 	}
 	public SurfaceViewScreen(Context context) {
         super(context);
-		mContext = context;
 		getHolder().addCallback(this);
     }
     
@@ -222,7 +218,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 	/*
 	* This method creates the face 
 	*/
-	public void addFaceElements2(int width, int height, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
+	public void addFaceElements2(Resources resources, int width, int height, int radius, int faceID, Bitmap pupilBitmap, int rDirID, int lDirID){
 		rightEye = new ElementEye(radius, "right", getResources().getStringArray(rDirID), 
 				pupilBitmap);
 		rightEye.event = this;
@@ -235,7 +231,7 @@ public class SurfaceViewScreen extends SurfaceView implements SurfaceHolder.Call
 
     	elements.add(leftEye);
 		
-    	face = new ElementFace2(mContext, Color.BLACK, faceID);
+    	face = new ElementFace2(resources, Color.BLACK, faceID);
     	elements.add(face);
     	
 		rightEye.setFace(face);

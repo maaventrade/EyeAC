@@ -1,6 +1,7 @@
 package com.alexmochalov.animation;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -19,13 +20,13 @@ import android.util.*;
 public class ElementFace2 extends Element{
 	private boolean mEyesArrived = false; // To synchronize eyes moving
 	
-	public ElementFace2(Context context, int color, int faceID){
+	public ElementFace2(Resources resources, int color, int faceID){
 		super(new PointF(0, 0), color);
 		
 		Options opts = new Options();
 		opts.inScaled = false;
 		
-		bitmapInitial = BitmapFactory.decodeResource(context.getResources(), faceID, opts);
+		bitmapInitial = BitmapFactory.decodeResource(resources, faceID, opts);
 		rectInitial = new Rect(0, 0, bitmapInitial.getWidth(), bitmapInitial.getHeight());
 		
 		bitmap = Bitmap.createScaledBitmap(bitmapInitial, 

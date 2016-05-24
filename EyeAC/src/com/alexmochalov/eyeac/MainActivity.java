@@ -94,21 +94,26 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 		// If there is not found APP_FOLDER, create it
 		checkDirectory();
 		
+	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int face_number = prefs.getInt(FACE_NUMBER, -1);
+		if (face_number == -1){
+			// If face_number doesn't selected then
+			// select face number of the application  
+			String[] numbers = getResources().getStringArray(R.array.FaceNumber);
+			CustomArrayAdapter myListAdapter = new CustomArrayAdapter(this, 0, numbers);
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle(getResources().getString(R.string.face_number))
+				.setAdapter(myListAdapter, new DialogInterface.OnClickListener() {
+	                        @Override
+	                        public void onClick(DialogInterface dialog, int position) {
+	                    		surface.setFaceNumberAndReset(PreferenceManager.getDefaultSharedPreferences(mContext), position, FACE_NUMBER);
+	                        	dialog.dismiss();
+	                        }
+	                    });
+			builder.show();			
+		}
 		
-		// Select mode of the application  
-		String[] modes = getResources().getStringArray(R.array.FaceNumber);
-		CustomArrayAdapter myListAdapter = new CustomArrayAdapter(this, 0, modes);
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-			.setTitle(getResources().getString(R.string.face_number))
-			.setAdapter(myListAdapter, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int position) {
-                    		surface.setFaceNumberAndReset(position);
-                        	dialog.dismiss();
-                        }
-                    });
-		builder.show();			
 		
 	}
 	
@@ -408,6 +413,7 @@ public class MainActivity extends Activity  { //implements OnSharedPreferenceCha
 
 		int face_number = prefs.getInt(FACE_NUMBER, 0);
 		surface.setFaceNumber(face_number);
+		
 		surface.setMode(mode);
 		surface.setPrefs(prefs);
 		
